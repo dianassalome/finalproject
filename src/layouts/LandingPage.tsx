@@ -1,9 +1,7 @@
 import Head from "next/head";
 import styled from "@emotion/styled";
 import cards from "@/assets/cardContent";
-import type { GetServerSideProps } from "next";
-import axios from "axios";
-import NavBar from "@/components/NavBar";
+import Link from "next/link";
 
 /** @jsxImportSource @emotion/react */
 import { css, jsx } from "@emotion/react";
@@ -26,9 +24,9 @@ const tilesStyles = css`
 `;
 
 const subTextStyles = css`
-  text-align: center;
-  font-size: 16px;
-  margin-top: -20px;
+text-align: center;
+font-size: 16px;
+margin-top: -20px;
   @media (min-width: 650px) {
     font-size: 22px;
   }
@@ -40,8 +38,9 @@ const ArrowIcon = styled.i`
 `;
 
 const SectionContainer = styled(CenterElementsContainer)`
-  margin: 0 5%;
-`;
+margin: 0 5%;
+`
+
 
 export default function Home() {
   return (
@@ -53,16 +52,17 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        {/* <NavBar validUser={false}/> */}
+        {/* <Image
+          src="https://images.pexels.com/photos/163185/old-retro-antique-vintage-163185.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+          alt=""
+        /> */}
         <SectionContainer>
           <Title1>
             Explore new places, uncover hidden gems, marvel at natural wonders,
-            or document your surveys.
+            or document your surveys. 
           </Title1>
-          <p css={subTextStyles}>
-            Never miss a moment – tag your experiences and curate your own
-            unique stories.
-          </p>
+          <p css={subTextStyles}>Never miss a moment – tag your experiences
+            and curate your own unique stories.</p>
           <NextLink href="/login">
             <Button>
               Start recording{" "}
@@ -79,25 +79,3 @@ export default function Home() {
     </>
   );
 }
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  try {
-    const cookies = context.req.headers.cookie;
-
-    const cleanCookie = cookies?.replace("authToken=", "");
-
-    const userValidation = await axios.get(
-      "https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/auth/me",
-      { headers: { Authorization: `Bearer ${cleanCookie}` } }
-    );
-
-    return {
-      redirect: {
-        permanent: false,
-        destination: `/notes`,
-      },
-    };
-  } catch (error) {
-    return { props: {} };
-  }
-};
