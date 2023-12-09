@@ -2,23 +2,17 @@ import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import axios from "axios";
 import styled from "@emotion/styled";
 import { useState } from "react";
-import { TFormData } from "@/components/UserForm/types";
+import { TFormData } from "@/components/UserComponents/types";
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
 import { setData, logout } from "@/state/user/userSlice";
+import { userAgent } from "next/server";
 
 //Components
 import CenterElementsContainer from "@/components/GeneralContainers/CenterElementsContainer";
 import Button from "@/components/Button";
-import UserForm from "@/components/UserForm/UserForm";
-import { userAgent } from "next/server";
-
-const RedButton = styled(Button)`
-  background-color: rgb(255, 0, 0);
-  &:hover {
-    background-color: rgb(220, 20, 60);
-  }
-`;
+import UserForm from "@/components/UserComponents/UserForm";
+import { RedButton } from "@/components/FormComponents/RedButton";
 
 const AccountSettings = ({
   user,

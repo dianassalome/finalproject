@@ -1,58 +1,106 @@
-/** @jsxImportSource @emotion/react */
-import styled from "@emotion/styled";
+import emotionStyled from "@emotion/styled";
 import NextLink from "./NextLink";
 import LogoS from "./Logo/Logo";
 import { NextRouter, useRouter } from "next/router";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "@/state/user/userSlice";
 import { RootState } from "@/state/store";
-import { css, jsx } from "@emotion/react";
+
 import { useState, useEffect } from "react";
 
-const NavContainer = styled.nav`
+const MobileLink = emotionStyled(NextLink)`
+display: flex;
+@media (min-width: 700px) {
+  display: none;
+}
+`;
+
+const MobileIcon = emotionStyled.i`
+font-size: 28px;
+margin: 0 3px;
+@media (min-width: 700px) {
+  display: none;
+}
+`;
+
+const DesktopLink = emotionStyled(NextLink)`
+display: none;
+border-radius: 5px;
+padding: 5px 7px;
+cursor: pointer;
+&:hover {
+  background-color: rgb(245, 245, 245);
+}
+@media (min-width: 700px) {
+  display: flex;
+}
+`;
+
+const NavContainer = emotionStyled.nav`
   display: flex;
   justify-content: space-between;
   padding: 10px;
   position: sticky;
   top: 0;
   background-color: rgb(255, 255, 255);
-  z-index: 2;
+  z-index: 1001;
   box-shadow: 1px 2px 17px 0px rgba(0, 0, 0, 0.1);
   -webkit-box-shadow: 1px 2px 17px 0px rgba(0, 0, 0, 0.1);
   -moz-box-shadow: 1px 2px 17px 0px rgba(0, 0, 0, 0.1);
+  @media (min-width: 700px) {
+    height: 50px;
+  }
 `;
 
-const Options = styled.div`
+const Options = emotionStyled.div`
   display: flex;
   gap: 10px;
   align-items: center;
 `;
 
-const Icon = styled.i`
-  font-size: 25px;
-`;
-
-const mobileStyles = css`
+const DesktopText = emotionStyled.p`
+display: none;
+border-radius: 5px;
+padding: 5px 7px;
+cursor: pointer;
+&:hover {
+  background-color: rgb(245, 245, 245);
+}
+@media (min-width: 700px) {
   display: flex;
-  font-size: 28px;
-  margin: 0 3px;
-  @media (min-width: 500px) {
-    display: none;
-  }
+}
 `;
 
-const desktopStyles = css`
-  display: none;
-  border-radius: 5px;
-  padding: 5px 7px;
-  cursor: pointer;
-  &:hover {
-    background-color: rgb(245, 245, 245);
-  }
-  @media (min-width: 500px) {
-    display: flex;
-  }
-`;
+// const MobileIcon = emotionStyled.i`
+// display: flex;
+// font-size: 28px;
+// margin: 0 3px;
+// @media (min-width: 700px) {
+//   display: none;
+// }
+// `;
+
+// const mobileStyles = css`
+//   display: flex;
+//   font-size: 28px;
+//   margin: 0 3px;
+//   @media (min-width: 700px) {
+//     display: none;
+//   }
+// `;
+
+// const desktopStyles = css`
+//   display: none;
+//   border-radius: 5px;
+//   padding: 5px 7px;
+//   cursor: pointer;
+//   &:hover {
+//     background-color: rgb(245, 245, 245);
+//   }
+//   @media (min-width: 700px) {
+//     display: flex;
+//   }
+// `;
 
 const NavBar = () => {
   const router = useRouter();
@@ -60,10 +108,10 @@ const NavBar = () => {
 
   const validUser = useSelector((state: RootState) => state.user.data.id);
 
-  console.log("I'M RENDERING", validUser)
+  // console.log("I'M RENDERING", validUser)
 
   const handleClickLogOut = () => {
-    console.log("IM TRYING TO SHUT DOWN")
+    // console.log("IM TRYING TO SHUT DOWN")
     dispatch(logout());
     // router.reload()
     router.push("/");
@@ -79,24 +127,38 @@ const NavBar = () => {
       <Options>
         {validUser ? (
           <>
-            <NextLink href="/notes">
-              <i className="fi fi-rr-books" css={mobileStyles} />
-              <p css={desktopStyles}>Notebooks</p>
-            </NextLink>
-            <NextLink href="/account">
-              <i className="fi fi-rs-circle-user" css={mobileStyles} />
-              <p css={desktopStyles}>Account</p>
-            </NextLink>
+            {/* <NextLink href="/notes">
+              <MobileIcon className="fi fi-rr-books" />
+              <DesktopText>Notebooks</DesktopText>
+            </NextLink> */}
+            {/* <NextLink href="/account">
+              <MobileIcon className="fi fi-rs-circle-user" />
+              <DesktopText>Account</DesktopText>
+            </NextLink> */}
+            <MobileLink href="/notes">
+              <MobileIcon className="fi fi-rr-books" />
+            </MobileLink>
+            <MobileLink href="/account">
+              <MobileIcon className="fi fi-rs-circle-user" />
+            </MobileLink>
+            <DesktopLink href="/notes">Notebooks</DesktopLink>
+            <DesktopLink href="/account">Account</DesktopLink>
             <div onClick={handleClickLogOut}>
-              <i className="fi fi-rr-exit" css={mobileStyles} />
-              <p css={desktopStyles}>Log Out</p>
+              <MobileIcon className="fi fi-rr-exit" />
+              <DesktopText>Log Out</DesktopText>
             </div>
           </>
         ) : (
-          <NextLink href="/login">
-            <i className="fi fi-rs-circle-user" css={mobileStyles} />
-            <p css={desktopStyles}>Log in</p>
-          </NextLink>
+          <>
+            <MobileLink href="/login">
+              <MobileIcon className="fi fi-rs-circle-user" />
+            </MobileLink>
+            <DesktopLink href="/login">Log in</DesktopLink>
+          </>
+          // <NextLink href="/login">
+          //   <MobileIcon className="fi fi-rs-circle-user" />
+          //   <DesktopText>Log in</DesktopText>
+          // </NextLink>
         )}
       </Options>
     </NavContainer>

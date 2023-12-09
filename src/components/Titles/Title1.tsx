@@ -1,20 +1,10 @@
-/** @jsxImportSource @emotion/react */
-import { css , jsx} from "@emotion/react";
+import emotionStyled from "@emotion/styled";
 
-const style = css`
+const Title1 = emotionStyled.h1`
 text-align: center;
   font-size: 25px;
   @media (min-width: 820px) {
     font-size: 45px;
   }
-`;
-
-type TProps = {
-    children: React.ReactNode; 
-};
-
-const Title1 = (props: TProps) => {
-  return <h1 css={style}>{props.children}</h1>;
-};
-
+`
 export default Title1;

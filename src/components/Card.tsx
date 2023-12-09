@@ -1,4 +1,4 @@
-import styled from "@emotion/styled";
+import emotionStyled from "@emotion/styled";
 import CenterElementsContainer from "./GeneralContainers/CenterElementsContainer";
 
 type TPicLabelCard = {
@@ -6,15 +6,12 @@ type TPicLabelCard = {
   text: string;
 }
 
-const Image = styled.img`
+const Image = emotionStyled.img`
 width: 80%;
 `
-
-
-const Text = styled.p`
+const Text = emotionStyled.p`
 text-align: center;
 `
-
 
 const Card = ({ image, text }: TPicLabelCard) => {
   return (

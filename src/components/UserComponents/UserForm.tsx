@@ -1,4 +1,4 @@
-import { TFormType } from "@/components/UserForm/types";
+import { TFormType } from "@/components/UserComponents/types";
 
 //Components
 import Button from "../Button";
@@ -13,25 +13,24 @@ const UserForm = ({
   onSubmit,
   onInputChange,
   formData,
-  disabled
+  disabled,
 }: TFormType) => {
   return (
     <form onSubmit={onSubmit}>
       <CenterElementsContainer>
         <Title1>{formType}</Title1>
-        {(formType === "Sign up" ||
-          formType === "") && (
-            <InputLabelContainer>
-              <FormLabels htmlFor="name">Name</FormLabels>
-              <FormInputBoxes
-                onChange={onInputChange}
-                value={formData.name}
-                name="name"
-                required
-                disabled={disabled}
-              />
-            </InputLabelContainer>
-          )}
+        {(formType === "Sign up" || formType === "") && (
+          <InputLabelContainer>
+            <FormLabels htmlFor="name">Name</FormLabels>
+            <FormInputBoxes
+              onChange={onInputChange}
+              value={formData.name}
+              name="name"
+              required
+              disabled={disabled}
+            />
+          </InputLabelContainer>
+        )}
         <InputLabelContainer>
           <FormLabels htmlFor="email">Email</FormLabels>
           <FormInputBoxes

@@ -1,6 +1,6 @@
-import styled from "@emotion/styled";
+import emotionStyled from "@emotion/styled";
 
-const InputLabelContainer = styled.div`
+const InputLabelContainer = emotionStyled.div`
 display: flex;
 flex-direction: column;
 gap: 2px;

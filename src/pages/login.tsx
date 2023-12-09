@@ -3,7 +3,7 @@ import type { GetServerSideProps } from "next";
 import axios from "axios";
 
 //Components
-import Login from "@/components/UserForm/LoginLogic";
+import Login from "@/components/UserComponents/LoginLogic";
 import CenterElementsContainer from "@/components/GeneralContainers/CenterElementsContainer";
 import NextLink from "@/components/NextLink";
 import { useDispatch, useSelector } from "react-redux";
@@ -20,9 +20,8 @@ const FaintLink = styled(NextLink)`
 `;
 
 const LoginPage = () => {
-
-  const userInStore = useSelector((state: RootState) => state.user)
-  console.log("USER IN STORE - LOGIN PAGE",userInStore)
+  const userInStore = useSelector((state: RootState) => state.user);
+  console.log("USER IN STORE - LOGIN PAGE", userInStore);
 
   return (
     <CenterElementsContainer>
@@ -54,6 +53,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   } catch (error) {
-    return {props: {}}
+    return { props: {} };
   }
-}
+};
