@@ -1,6 +1,6 @@
-import styled from "@emotion/styled"
+import emotionStyled from "@emotion/styled"
 
-const Button = styled.button`
+const Button = emotionStyled.button`
 background-color: rgb(0, 0, 0);
 font-family: 'Roboto', sans-serif;
 border: none;

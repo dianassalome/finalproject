@@ -1,5 +1,5 @@
 //Components
-import Signup from "@/components/UserForm/SignupLogic";
+import Signup from "@/components/UserComponents/SignupLogic";
 import CenterElementsContainer from "@/components/GeneralContainers/CenterElementsContainer";
 import type { GetServerSideProps } from "next";
 import axios from "axios";
@@ -32,6 +32,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   } catch (error) {
-    return {props: {}}
+    return { props: {} };
   }
-}
+};

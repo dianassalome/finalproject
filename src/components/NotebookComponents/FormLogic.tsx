@@ -1,6 +1,6 @@
-import NotesForm from "@/components/NotesForm/NotesForm";
+import NotesForm from "@/components/NotebookComponents/NotesForm";
 import { useState } from "react";
-import { INotesFormData } from "@/components/NotesForm/interfaces";
+import { INotesFormData } from "@/components/NotebookComponents/types";
 // import { useRouter } from "next/router";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/state/store";

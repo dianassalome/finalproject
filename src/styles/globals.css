@@ -12,15 +12,6 @@ body {
   font-family: 'Roboto', sans-serif;
 } 
 
-/* sizing of map container + cursor */
-/* .leaflet-container {
-  height: 350px;
-  width: 600px;
-  cursor: crosshair !important;
-} */
-
-
-
 /* :root {
   --max-width: 1100px;
   --border-radius: 12px;

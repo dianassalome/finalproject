@@ -1,6 +1,6 @@
-import styled from "@emotion/styled";
+import emotionStyled from "@emotion/styled";
 
-const FormLabels = styled.label`
+const FormLabels = emotionStyled.label`
 
 `
 

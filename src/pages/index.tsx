@@ -1,12 +1,8 @@
 import Head from "next/head";
-import styled from "@emotion/styled";
+import emotionStyled from "@emotion/styled";
 import cards from "@/assets/cardContent";
 import type { GetServerSideProps } from "next";
 import axios from "axios";
-import NavBar from "@/components/NavBar";
-
-/** @jsxImportSource @emotion/react */
-import { css, jsx } from "@emotion/react";
 
 //Components
 import Card from "@/components/Card";
@@ -15,31 +11,31 @@ import CenterElementsContainer from "@/components/GeneralContainers/CenterElemen
 import NextLink from "@/components/NextLink";
 import Title1 from "@/components/Titles/Title1";
 
-const tilesStyles = css`
-  display: flex;
-  flex-direction: column;
-  margin: 0 50px;
-  @media (min-width: 650px) {
-    flex-direction: row;
-    justify-content: space-between;
-  }
-`;
+const TilesSection = emotionStyled.section`
+display: flex;
+flex-direction: column;
+margin: 0 50px;
+@media (min-width: 650px) {
+  flex-direction: row;
+  justify-content: space-between;
+}
+`
 
-const subTextStyles = css`
-  text-align: center;
-  font-size: 16px;
-  margin-top: -20px;
-  @media (min-width: 650px) {
-    font-size: 22px;
-  }
-`;
+const SubText = emotionStyled.p`
+text-align: center;
+font-size: 16px;
+margin-top: -20px;
+@media (min-width: 650px) {
+  font-size: 22px;
+}
+`
 
-const ArrowIcon = styled.i`
+const ArrowIcon = emotionStyled.i`
   font-size: 22px;
   height: 22px;
 `;
 
-const SectionContainer = styled(CenterElementsContainer)`
+const SectionContainer = emotionStyled(CenterElementsContainer)`
   margin: 0 5%;
 `;
 
@@ -53,16 +49,15 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        {/* <NavBar validUser={false}/> */}
         <SectionContainer>
           <Title1>
             Explore new places, uncover hidden gems, marvel at natural wonders,
             or document your surveys.
           </Title1>
-          <p css={subTextStyles}>
+          <SubText>
             Never miss a moment – tag your experiences and curate your own
             unique stories.
-          </p>
+          </SubText>
           <NextLink href="/login">
             <Button>
               Start recording{" "}
@@ -70,11 +65,11 @@ export default function Home() {
             </Button>
           </NextLink>
         </SectionContainer>
-        <section css={tilesStyles}>
+        <TilesSection>
           {cards.map(({ id, image, text }) => (
             <Card key={id} image={image} text={text} />
           ))}
-        </section>
+        </TilesSection>
       </main>
     </>
   );
@@ -86,7 +81,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
     const cleanCookie = cookies?.replace("authToken=", "");
 
-    const userValidation = await axios.get(
+    await axios.get(
       "https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/auth/me",
       { headers: { Authorization: `Bearer ${cleanCookie}` } }
     );

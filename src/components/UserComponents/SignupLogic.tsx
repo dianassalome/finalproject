@@ -1,17 +1,23 @@
-import UserForm from "@/components/UserForm/UserForm";
 import axios from "axios";
 import { useState } from "react";
-import { TFormData } from "@/components/UserForm/types";
 import { useRouter } from "next/router";
 
-const initialFormData: TFormData = {
-  name: "",
-  email: "",
-  password: "",
-};
+//Functions
+import { setCookies } from "@/actions/cookies";
+
+//Components
+import UserForm from "@/components/UserComponents/UserForm";
+
+//Types
+import { TFormData } from "@/components/UserComponents/types";
 
 const Signup = () => {
-  const [formData, setFormData] = useState<TFormData>(initialFormData);
+  const [formData, setFormData] = useState<TFormData>({
+    name: "",
+    email: "",
+    password: "",
+  });
+
   const router = useRouter();
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,6 +39,8 @@ const Signup = () => {
         "https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/auth/signup",
         { name, email, password }
       );
+
+      await setCookies("authToken", response.data.authToken);
 
       router.push("/notes");
     } catch (error) {
