@@ -16,7 +16,7 @@ text-align: center;
 const Card = ({ image, text }: TPicLabelCard) => {
   return (
     <CenterElementsContainer>
-      <Image src={image} />
+      <Image src={image} alt={text}/>
       <Text>{text}</Text>
     </CenterElementsContainer>
   );
