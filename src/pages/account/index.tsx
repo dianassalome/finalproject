@@ -1,12 +1,15 @@
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import axios from "axios";
-import styled from "@emotion/styled";
 import { useState } from "react";
 import { TFormData } from "@/components/UserComponents/types";
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
 import { setData, logout } from "@/state/user/userSlice";
-import { userAgent } from "next/server";
+import emotionStyled from "@emotion/styled";
+
+//Alerts
+import alertMessages from "@/assets/alertMessages";
+import useSnackbar from "@/components/CustomHooks/useSnackbar";
 
 //Components
 import CenterElementsContainer from "@/components/GeneralContainers/CenterElementsContainer";
@@ -14,9 +17,16 @@ import Button from "@/components/Button";
 import UserForm from "@/components/UserComponents/UserForm";
 import { RedButton } from "@/components/FormComponents/RedButton";
 
+const Container = emotionStyled(CenterElementsContainer)`
+height: 100%;
+min-height: 70vh;
+`;
+
 const AccountSettings = ({
   user,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const { handleSnackBarOpening, CustomSnackbar } = useSnackbar();
+
   const initialFormData: TFormData = {
     name: user.name,
     email: user.email,
@@ -52,12 +62,21 @@ const AccountSettings = ({
       const { id, created_at, name: username, notebooks } = response.data;
       const updatedUser = { id, created_at, name: username, notebooks };
 
-      console.log(updatedUser);
       dispatch(setData(updatedUser));
+
+      handleSnackBarOpening(alertMessages.edit.success, "success", {
+        name: "INFO",
+      });
 
       setEditMode(false);
     } catch (error) {
-      console.log(error);
+      if (axios.isAxiosError(error)) {
+        console.error(error.response?.data.message);
+        const message = error.response?.data.message;
+        handleSnackBarOpening(message, "error", { name: "INFO" });
+      } else {
+        console.error(error);
+      }
     }
   };
 
@@ -72,21 +91,33 @@ const AccountSettings = ({
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
 
+      handleSnackBarOpening(alertMessages.delete.success, "success", {
+        name: "INFO",
+      });
+
       dispatch(logout());
       router.push("/");
     } catch (error) {
-      console.log(error);
+      if (axios.isAxiosError(error)) {
+        console.error(error.response?.data.message);
+        const message = error.response?.data.message;
+        handleSnackBarOpening(message, "error", { name: "INFO" });
+      } else {
+        console.error(error);
+      }
     }
   };
 
   return (
     <>
-      <CenterElementsContainer>
+      <Container>
         <Button onClick={handleEditButton}>
           {editMode ? (
-            <i className="fi fi-br-cross-circle" />
+            <><i className="fi fi-br-cross-circle" /> Cancel</>
           ) : (
-            <i className="fi fi-rr-edit" />
+            <>
+              <i className="fi fi-rr-edit" /> Edit
+            </>
           )}
         </Button>
         <UserForm
@@ -96,9 +127,18 @@ const AccountSettings = ({
           onSubmit={onSubmit}
           disabled={editMode ? false : true}
         />
-
-        <RedButton onClick={handleDeleteButton}>Delete account</RedButton>
-      </CenterElementsContainer>
+        <RedButton
+          onClick={handleSnackBarOpening.bind(
+            null,
+            alertMessages.delete.warning,
+            "warning",
+            { name: "CHOICE", function: handleDeleteButton, button: "Delete" }
+          )}
+        >
+          Delete account
+        </RedButton>
+      </Container>
+      <CustomSnackbar />
     </>
   );
 };
@@ -124,14 +164,12 @@ export const getServerSideProps = (async (context) => {
       { headers: { Authorization: `Bearer ${cleanCookie}` } }
     );
 
-    console.log("USER VALIDATION INSIDE ACTION", userValidation.data);
-
     const { id, created_at, email, name } = userValidation.data;
     const user = { id, created_at, email, name, token: cleanCookie };
 
     return { props: { user } };
   } catch (error) {
-    console.log("ESTOU A PASSAR AQUI", error);
+    console.log(error);
     return {
       redirect: {
         permanent: false,

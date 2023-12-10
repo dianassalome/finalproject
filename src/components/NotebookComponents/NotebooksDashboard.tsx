@@ -22,21 +22,26 @@ font-size: 30px;
 const SelectionContainer = emotionStyled.div`
 display: flex;
 gap: 2px;
-max-width: 290px;
+min-width: 290px;
+width: auto;
+@media (min-width: 700px) {
+  min-width: auto;
+}
 `
 
 type TDashBoardProps = {
   notebooks: [] | TBasicData[];
   handleNotebookSelection: React.ChangeEventHandler<HTMLSelectElement>;
   setForm: Function;
+  selectedNotebook: TBasicData | undefined,
 };
 
 const NotebooksDashboard = ({
   notebooks,
   handleNotebookSelection,
   setForm,
+  selectedNotebook
 }: TDashBoardProps) => {
-  console.log("I'M RENDERING _ Dashboard");
 
   return (
     <Container>
@@ -44,7 +49,7 @@ const NotebooksDashboard = ({
       <SelectionContainer>
       <SelectElement onChange={handleNotebookSelection}>
         {notebooks.map(({ id, title }) => (
-          <OptionElement key={id} id={id} title={title} />
+          <OptionElement key={id} id={id} title={title} selected={selectedNotebook?.id === id ? true : false}/>
         ))}
       </SelectElement>
       <Icon onClick={setForm.bind(null, "CREATE_NOTEBOOK")} className="fi fi-sr-square-plus" />

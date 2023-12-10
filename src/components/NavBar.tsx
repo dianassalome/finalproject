@@ -5,8 +5,12 @@ import { NextRouter, useRouter } from "next/router";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "@/state/user/userSlice";
 import { RootState } from "@/state/store";
-
 import { useState, useEffect } from "react";
+
+//Alerts
+import alertMessages from "@/assets/alertMessages";
+import useSnackbar from "./CustomHooks/useSnackbar";
+
 
 const MobileLink = emotionStyled(NextLink)`
 display: flex;
@@ -71,49 +75,18 @@ cursor: pointer;
 }
 `;
 
-// const MobileIcon = emotionStyled.i`
-// display: flex;
-// font-size: 28px;
-// margin: 0 3px;
-// @media (min-width: 700px) {
-//   display: none;
-// }
-// `;
-
-// const mobileStyles = css`
-//   display: flex;
-//   font-size: 28px;
-//   margin: 0 3px;
-//   @media (min-width: 700px) {
-//     display: none;
-//   }
-// `;
-
-// const desktopStyles = css`
-//   display: none;
-//   border-radius: 5px;
-//   padding: 5px 7px;
-//   cursor: pointer;
-//   &:hover {
-//     background-color: rgb(245, 245, 245);
-//   }
-//   @media (min-width: 700px) {
-//     display: flex;
-//   }
-// `;
-
 const NavBar = () => {
+  const {handleSnackBarOpening, CustomSnackbar} = useSnackbar()
   const router = useRouter();
   const dispatch = useDispatch();
 
   const validUser = useSelector((state: RootState) => state.user.data.id);
 
-  // console.log("I'M RENDERING", validUser)
-
   const handleClickLogOut = () => {
-    // console.log("IM TRYING TO SHUT DOWN")
+
     dispatch(logout());
-    // router.reload()
+    handleSnackBarOpening(alertMessages.logout.success, "success", {name: "INFO"})
+
     router.push("/");
   };
 
@@ -127,14 +100,6 @@ const NavBar = () => {
       <Options>
         {validUser ? (
           <>
-            {/* <NextLink href="/notes">
-              <MobileIcon className="fi fi-rr-books" />
-              <DesktopText>Notebooks</DesktopText>
-            </NextLink> */}
-            {/* <NextLink href="/account">
-              <MobileIcon className="fi fi-rs-circle-user" />
-              <DesktopText>Account</DesktopText>
-            </NextLink> */}
             <MobileLink href="/notes">
               <MobileIcon className="fi fi-rr-books" />
             </MobileLink>
@@ -155,12 +120,9 @@ const NavBar = () => {
             </MobileLink>
             <DesktopLink href="/login">Log in</DesktopLink>
           </>
-          // <NextLink href="/login">
-          //   <MobileIcon className="fi fi-rs-circle-user" />
-          //   <DesktopText>Log in</DesktopText>
-          // </NextLink>
         )}
       </Options>
+      <CustomSnackbar/>
     </NavContainer>
   );
 };

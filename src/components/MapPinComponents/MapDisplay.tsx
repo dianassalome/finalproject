@@ -16,14 +16,26 @@ type TNotebookProps = {
 };
 
 const Container = emotionStyled.div`
-width: 100vw;
+width: 100%;
 @media (max-width: 700px) {
   height: 350px;
 }
-`
+`;
+
+const PlaceholderContainer = emotionStyled.div`
+display: flex;
+height: 100%;
+justify-content: center;
+align-items: center;
+font-size: 20px;
+border-top: 1px solid rgb(230,230,230);
+@media (min-width: 700px) {
+  border: none;
+  border-left: 1px solid rgb(230,230,230);
+}
+`;
 
 const MapDisplay = ({ id }: TNotebookProps) => {
-  console.log("ID NO NOTEBOOKDISPLAY", id);
 
   const [notebook, setNotebook] = useState<TNotebook | undefined>();
 
@@ -37,8 +49,6 @@ const MapDisplay = ({ id }: TNotebookProps) => {
             `https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/notebook/${id}`,
             { headers: { Authorization: `Bearer ${token}` } }
           );
-
-          console.log(notebook.data);
 
           setNotebook(notebook.data);
         }
@@ -59,7 +69,9 @@ const MapDisplay = ({ id }: TNotebookProps) => {
       {notebook ? (
         <Map pins={notebook.pins} notebook_id={notebook.id} />
       ) : (
-        <p>Create your first notebook.</p>
+        <PlaceholderContainer>
+          <p>You have no notebooks.</p>
+        </PlaceholderContainer>
       )}
     </Container>
   );

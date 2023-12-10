@@ -33,8 +33,8 @@ const SideBar = emotionStyled.div`
   overflow: auto;
   margin-bottom: 10px;
   @media (min-width: 700px) {
-    width: auto;
-    max-width: 290px;
+    width: 320px;
+    // max-width: 320px;
     height: auto;
   }
 `;
@@ -47,6 +47,7 @@ const GeneralContainer = emotionStyled.div`
   @media (min-width: 700px) {
     flex-direction: row;
     height: 70vh;
+    width: 100%;
   }
 `;
 
@@ -96,8 +97,6 @@ const NotebooksPage = ({
   user,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
 
-  console.log("I'M RENDERING _ NOTE INDEX");
-
   type TFormTypes = "CREATE_NOTEBOOK" | "EDIT_NOTEBOOK";
 
   const dispatch = useDispatch();
@@ -136,8 +135,6 @@ const NotebooksPage = ({
     e.target === e.currentTarget && setModalType(false);
   };
 
-  console.log("CURRENT SELECTED NOTEBOOK",selectedNotebook);
-
   return (
     <GeneralContainer>
       <SideBar>
@@ -145,6 +142,7 @@ const NotebooksPage = ({
           notebooks={userNotebooks}
           handleNotebookSelection={handleNotebookSelection}
           setForm={setForm}
+          selectedNotebook={selectedNotebook}
         />
         {selectedNotebook && (
           <div>

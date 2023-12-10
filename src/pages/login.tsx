@@ -9,6 +9,7 @@ import NextLink from "@/components/NextLink";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "@/state/user/userSlice";
 import { RootState } from "@/state/store";
+import emotionStyled from "@emotion/styled";
 
 const FaintLink = styled(NextLink)`
   color: rgb(61, 61, 61);
@@ -19,17 +20,21 @@ const FaintLink = styled(NextLink)`
   }
 `;
 
+const Container = emotionStyled(CenterElementsContainer)`
+height: 100%;
+min-height: 70vh;
+`
+
 const LoginPage = () => {
   const userInStore = useSelector((state: RootState) => state.user);
-  console.log("USER IN STORE - LOGIN PAGE", userInStore);
 
   return (
-    <CenterElementsContainer>
+    <Container>
       <Login />
       <FaintLink href="/signup">
         New here? Get started by creating an account.
       </FaintLink>
-    </CenterElementsContainer>
+    </Container>
   );
 };
 
