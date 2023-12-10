@@ -11,6 +11,7 @@ const ModalContainer = emotionStyled.div`
     position: relative;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
     background-color: rgb(255, 255, 255);
     border-radius: 10px;
     width: 100%;
@@ -63,7 +64,6 @@ const ModalContainer = emotionStyled.div`
 
 const ModalLayout = ({ children, closeModal }: TCloseModalProps) => {
   
-console.log("RENDERING _ ModalLayout")
   return (
       <ModalBackground onClick={closeModal}>
       <ModalContainer>

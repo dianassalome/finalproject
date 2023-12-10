@@ -1,6 +1,10 @@
 import { useState } from "react";
 import axios from "axios";
 
+//Alerts
+import alertMessages from "@/assets/alertMessages";
+import useSnackbar from "../CustomHooks/useSnackbar";
+
 //Functions
 import { getCookies } from "@/actions/cookies";
 
@@ -17,14 +21,13 @@ const CreateMarkerLogic = ({
   closeModal,
   updateUserMarkers,
 }: TMarkerCreation) => {
+  const { handleSnackBarOpening, CustomSnackbar } = useSnackbar();
   const initialFormData = {
     title: "",
     description: "",
   };
 
   const [formData, setFormData] = useState(initialFormData);
-
-  console.log("I'M RENDERING _ CreateNotebook")
 
   const onInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -51,22 +54,34 @@ const CreateMarkerLogic = ({
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      console.log("RESULTADO DO CREATE MARKER", marker.data);
+      handleSnackBarOpening(alertMessages.create.success, "success", {name: "INFO"});
 
-      updateUserMarkers(marker.data.pins);
+      setTimeout(() => {
+        updateUserMarkers(marker.data.pins);
+      }, 1000);
+
     } catch (error) {
-      console.log(error);
+      if (axios.isAxiosError(error)) {
+        console.error(error.response?.data.message);
+        const message = error.response?.data.message;
+        handleSnackBarOpening(message, "error", {name: "INFO"});
+      } else {
+        console.error(error);
+      }
     }
   };
 
   return (
-    <ModalLayout closeModal={closeModal}>
-      <NotesForm
-        onSubmit={onSubmit}
-        onInputChange={onInputChange}
-        formData={formData}
-      />
-    </ModalLayout>
+    <>
+      <ModalLayout closeModal={closeModal}>
+        <NotesForm
+          onSubmit={onSubmit}
+          onInputChange={onInputChange}
+          formData={formData}
+        />
+      </ModalLayout>
+      <CustomSnackbar />
+    </>
   );
 };
 

@@ -3,12 +3,18 @@ import Signup from "@/components/UserComponents/SignupLogic";
 import CenterElementsContainer from "@/components/GeneralContainers/CenterElementsContainer";
 import type { GetServerSideProps } from "next";
 import axios from "axios";
+import emotionStyled from "@emotion/styled";
+
+const Container = emotionStyled(CenterElementsContainer)`
+height: 100%;
+min-height: 70vh;
+`
 
 const SignupPage = () => {
   return (
-    <CenterElementsContainer>
+    <Container>
       <Signup />
-    </CenterElementsContainer>
+    </Container>
   );
 };
 

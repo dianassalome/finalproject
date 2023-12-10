@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styled from "@emotion/styled";
 
 //Map
@@ -7,7 +7,6 @@ import L from "leaflet";
 import {
   MapContainer,
   TileLayer,
-  useMap,
   Marker,
   Popup,
   useMapEvents,
@@ -31,6 +30,11 @@ const StyledMapContainer = styled(MapContainer)`
   cursor: crosshair !important;
 `;
 
+const TempMarkerPopup = styled.a`
+  cursor: pointer;
+  font-size: 16px;
+`;
+
 const MapPins = ({ pins, notebook_id }: MapPinsProps) => {
   const mapRef = useRef(null);
   const tempMarkerRef = useRef(null);
@@ -39,16 +43,19 @@ const MapPins = ({ pins, notebook_id }: MapPinsProps) => {
 
   const [pinList, setPinList] = useState<TPin[] | []>(notebookPins);
 
-  console.log("PIN LIST", pinList);
-
   //PIN SELECTION LOGIC
   const [selectedPin, setSelectedPin] = useState<TPin | null>(null);
-  const onExpandMarkerClick = (id: number) => {
-    const pin = pinList.find((pin) => pin.id === id);
-    //Typescript - ele acha que pode não encontrar um id, então o resultado pode ser undefined
-    selectedPin?.id === id ? setSelectedPin(null) : setSelectedPin(pin!);
-    setNewLocation(null);
-  };
+
+  const initialMapCoordinates = pinList.length
+    ? { lat: pinList[0].location.data.lat, lng: pinList[0].location.data.lng }
+    : { lat: 38.707, lng: -9.13 };
+
+  // const onExpandMarkerClick = (id: number) => {
+  //   const pin = pinList.find((pin) => pin.id === id);
+  //   //Typescript - ele acha que pode não encontrar um id, então o resultado pode ser undefined
+  //   selectedPin?.id === id ? setSelectedPin(null) : setSelectedPin(pin!);
+  //   setNewLocation(null);
+  // };
 
   //MODALS
   type TFormTypes = "CREATE_MARKER" | "EDIT_MARKER";
@@ -69,6 +76,7 @@ const MapPins = ({ pins, notebook_id }: MapPinsProps) => {
   const icon = L.icon({
     iconUrl: "/map/yellow_marker.png",
     iconSize: [34, 34],
+    iconAnchor: [17, 35],
   });
 
   //iconAnchor: [largura/2, altura+1px]
@@ -79,8 +87,15 @@ const MapPins = ({ pins, notebook_id }: MapPinsProps) => {
   });
 
   const onMapClick = (e: L.LeafletMouseEvent) => {
+
     setNewLocation(e.latlng);
     setSelectedPin(null);
+
+    //cuidado type any
+    const tempMarker = tempMarkerRef.current;
+    if (tempMarker) {
+      (tempMarker as any).openPopup();
+    }
   };
 
   const MapClickComponent = () => {
@@ -92,24 +107,17 @@ const MapPins = ({ pins, notebook_id }: MapPinsProps) => {
     return null;
   };
 
-  const tempMarker = tempMarkerRef.current;
-  if (tempMarker) {
-    (tempMarker as any).openPopup();
-  }
-
   const updateUserMarkers = (pins: TPin[] | []) => {
     setNewLocation(null);
     setModalType(false);
     setPinList(pins);
   };
 
-  console.log("SELECTED PIN", selectedPin);
-
   return (
     <>
       <StyledMapContainer
         ref={mapRef}
-        center={[38.779, -9.23]}
+        center={initialMapCoordinates}
         zoom={13}
         scrollWheelZoom={false}
       >
@@ -129,10 +137,10 @@ const MapPins = ({ pins, notebook_id }: MapPinsProps) => {
                 <Popup>
                   <div>
                     <h4>{title}</h4>
-                    <i
+                    {/* <i
                       onClick={() => onExpandMarkerClick(id)}
                       className="fi fi-br-arrow-up-right-from-square"
-                    />
+                    /> */}
                   </div>
                   <p>{description}</p>
                 </Popup>
@@ -146,7 +154,9 @@ const MapPins = ({ pins, notebook_id }: MapPinsProps) => {
             icon={tempIcon}
           >
             <Popup>
-              <a onClick={() => setModalType("CREATE_MARKER")}>Pin this location!</a>
+              <TempMarkerPopup onClick={() => setModalType("CREATE_MARKER")}>
+                📌 Pin this location!
+              </TempMarkerPopup>
             </Popup>
           </Marker>
         )}

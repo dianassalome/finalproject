@@ -3,6 +3,10 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setData } from "@/state/user/userSlice";
 
+//Alerts
+import alertMessages from "@/assets/alertMessages";
+import useSnackbar from "../CustomHooks/useSnackbar";
+
 //Functions
 import { getCookies } from "@/actions/cookies";
 
@@ -22,13 +26,12 @@ const CreateNotebookLogic = ({
   updateUserNotebooks,
   closeModal,
 }: TCreateLogicProps) => {
+  const {handleSnackBarOpening, CustomSnackbar} = useSnackbar()
   const dispatch = useDispatch();
 
   const initialData = { title: "", description: "" };
 
   const [formData, setFormData] = useState(initialData);
-
-  console.log("I'M RENDERING _ CreateNotebook")
 
   const getCreatedNotebook = (notebooks: TBasicData[]) => {
     const newestId = notebooks.reduce((acc: number, notebook: TBasicData) => {
@@ -60,12 +63,21 @@ const CreateNotebookLogic = ({
       dispatch(setData({ id, created_at, name, notebooks }));
 
       const createdNotebook = getCreatedNotebook(notebooks)
+      
+      handleSnackBarOpening(alertMessages.create.success, "success", {name: "INFO"})
 
-      console.log("EDITED NOTEBOOK ID",createdNotebook)
+      setTimeout(() => {
+        updateUserNotebooks(notebooks, createdNotebook);
+      }, 1000);
 
-      updateUserNotebooks(notebooks, createdNotebook);
     } catch (error) {
-      console.log(error);
+      if (axios.isAxiosError(error)) {
+        console.error(error.response?.data.message);
+        const message = error.response?.data.message;
+        handleSnackBarOpening(message, "error", {name: "INFO"});
+      } else {
+        console.error(error);
+      }
     }
   };
 
@@ -81,6 +93,7 @@ const CreateNotebookLogic = ({
   };
 
   return (
+    <>
     <ModalLayout closeModal={closeModal}>
       <NotesForm
         onSubmit={onSubmit}
@@ -88,6 +101,8 @@ const CreateNotebookLogic = ({
         formData={formData}
       />
     </ModalLayout>
+    <CustomSnackbar/>
+    </>
   );
 };
 

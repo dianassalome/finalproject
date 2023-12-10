@@ -3,6 +3,10 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setData } from "@/state/user/userSlice";
 
+//Alerts
+import alertMessages from "@/assets/alertMessages";
+import useSnackbar from "../CustomHooks/useSnackbar";
+
 //Functions
 import { getCookies } from "@/actions/cookies";
 
@@ -29,16 +33,13 @@ const EditNotebookLogic = ({
   const dispatch = useDispatch();
 
   const [formData, setFormData] = useState(initialData);
-
-  console.log("I'M RENDERING _ EditNotebook")
+  const {handleSnackBarOpening, CustomSnackbar} = useSnackbar()
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
 
       const token = await getCookies("authToken");
-
-      console.log("ID TO EDIT", notebookId);
 
       const { title, description } = formData;
 
@@ -52,13 +53,28 @@ const EditNotebookLogic = ({
 
       dispatch(setData({ id, created_at, name, notebooks }));
 
-      const editedNotebook = notebooks.find(({id}: TBasicData) => notebookId === id)
+      const editedNotebook = notebooks.find(
+        ({ id }: TBasicData) => notebookId === id
+      );
 
-      console.log("EDITED NOTEBOOK ID",editedNotebook.id)
+      handleSnackBarOpening(
+        alertMessages.edit.success,
+        "success",
+        {name: "INFO"}
+      );
 
-      updateUserNotebooks(notebooks, editedNotebook);
+      setTimeout(() => {
+        updateUserNotebooks(notebooks, editedNotebook);
+      }, 1000);
+      
     } catch (error) {
-      console.log(error);
+      if (axios.isAxiosError(error)) {
+        console.error(error.response?.data.message);
+        const message = error.response?.data.message;
+        handleSnackBarOpening(message, "error", {name: "INFO"});
+      } else {
+        console.error(error);
+      }
     }
   };
 
@@ -74,9 +90,9 @@ const EditNotebookLogic = ({
   };
 
   const handleDeleteButton = async () => {
-    const token = await getCookies("authToken");
+    try {
+      const token = await getCookies("authToken");
 
-      console.log("ID TO EDIT", notebookId);
       const user = await axios.delete(
         `https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/notebook/${notebookId}`,
         { headers: { Authorization: `Bearer ${token}` } }
@@ -85,18 +101,49 @@ const EditNotebookLogic = ({
       const { id, created_at, name, notebooks } = user.data;
 
       dispatch(setData({ id, created_at, name, notebooks }));
-      updateUserNotebooks(notebooks, notebooks[0]);
-  } 
+
+      handleSnackBarOpening(
+        alertMessages.delete.success,
+        "success",
+        {name: "INFO"}
+      )
+
+      setTimeout(() => {
+        updateUserNotebooks(notebooks, notebooks[0]);
+      }, 1000);
+
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error(error.response?.data.message);
+        const message = error.response?.data.message;
+        handleSnackBarOpening(message, "error", {name: "INFO"});
+      } else {
+        console.error(error);
+      }
+    }
+  };
 
   return (
-    <ModalLayout closeModal={closeModal}>
-      <NotesForm
-        onSubmit={onSubmit}
-        onInputChange={onInputChange}
-        formData={formData}
-      />
-      <RedButton onClick={handleDeleteButton}>Delete notebook</RedButton>
-    </ModalLayout>
+    <>
+      <ModalLayout closeModal={closeModal}>
+        <NotesForm
+          onSubmit={onSubmit}
+          onInputChange={onInputChange}
+          formData={formData}
+        />
+        <RedButton
+          onClick={handleSnackBarOpening.bind(
+            null,
+            alertMessages.delete.warning,
+            "warning",
+            {name: "CHOICE", function: handleDeleteButton, button: "Delete"}
+          )}
+        >
+          Delete notebook
+        </RedButton>
+      </ModalLayout>
+      <CustomSnackbar/>
+    </>
   );
 };
 

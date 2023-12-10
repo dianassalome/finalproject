@@ -2,6 +2,10 @@ import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/router";
 
+//Alerts
+import alertMessages from "@/assets/alertMessages";
+import useSnackbar from "../CustomHooks/useSnackbar";
+
 //Functions
 import { setCookies } from "@/actions/cookies";
 
@@ -12,6 +16,7 @@ import UserForm from "@/components/UserComponents/UserForm";
 import { TFormData } from "@/components/UserComponents/types";
 
 const Signup = () => {
+  const {handleSnackBarOpening, CustomSnackbar} = useSnackbar()
   const [formData, setFormData] = useState<TFormData>({
     name: "",
     email: "",
@@ -41,14 +46,23 @@ const Signup = () => {
       );
 
       await setCookies("authToken", response.data.authToken);
+      
+      handleSnackBarOpening(alertMessages.signup.success, "success", {name: "INFO"})
 
       router.push("/notes");
     } catch (error) {
-      console.log(error);
+      if (axios.isAxiosError(error)) {
+        console.error(error.response?.data.message);
+        const message = error.response?.data.message;
+        handleSnackBarOpening(message, "error", {name: "INFO"});
+      } else {
+        console.error(error);
+      }
     }
   };
 
   return (
+    <>
     <UserForm
       formType="Sign up"
       onSubmit={onSubmit}
@@ -56,6 +70,8 @@ const Signup = () => {
       formData={formData}
       disabled={false}
     />
+    <CustomSnackbar/>
+    </>
   );
 };
 
