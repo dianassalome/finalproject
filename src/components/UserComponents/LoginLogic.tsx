@@ -2,7 +2,6 @@ import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
-import { login } from "@/state/user/userSlice";
 
 //Alerts
 import alertMessages from "@/assets/alertMessages";
@@ -48,10 +47,7 @@ const Login = () => {
       );
 
       await setCookies("authToken", response.data.authToken);
-
-      //acho qu evou retirar o token da store
-      dispatch(login(response.data.authToken));
-
+  
       handleSnackBarOpening(alertMessages.login.success, "success", {name: "INFO"});
 
       setTimeout(() => {

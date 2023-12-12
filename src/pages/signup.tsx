@@ -24,11 +24,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   try {
     const cookies = context.req.headers.cookie;
 
-    const cleanCookie = cookies?.replace("authToken=", "");
+    const token = cookies?.replace("authToken=", "");
 
-    const userValidation = await axios.get(
+    await axios.get(
       "https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/auth/me",
-      { headers: { Authorization: `Bearer ${cleanCookie}` } }
+      { headers: { Authorization: `Bearer ${token}` } }
     );
 
     return {

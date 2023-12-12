@@ -19,7 +19,7 @@ const CreateMarkerLogic = ({
   location,
   notebook_id,
   closeModal,
-  updateUserMarkers,
+  updateNotebookMarkers,
 }: TMarkerCreation) => {
   const { handleSnackBarOpening, CustomSnackbar } = useSnackbar();
   const initialFormData = {
@@ -48,7 +48,7 @@ const CreateMarkerLogic = ({
 
       const { title, description } = formData;
 
-      const marker = await axios.post(
+      const notebook = await axios.post(
         "https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/pin",
         { title, description, notebook_id, location },
         { headers: { Authorization: `Bearer ${token}` } }
@@ -57,7 +57,7 @@ const CreateMarkerLogic = ({
       handleSnackBarOpening(alertMessages.create.success, "success", {name: "INFO"});
 
       setTimeout(() => {
-        updateUserMarkers(marker.data.pins);
+        updateNotebookMarkers(notebook.data.pins);
       }, 1000);
 
     } catch (error) {

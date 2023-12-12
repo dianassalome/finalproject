@@ -14,10 +14,11 @@ import emotionStyled from "@emotion/styled";
 
 //Types
 import { TBasicData } from "@/components/NotebookComponents/types";
+import { TPin } from "@/components/NotebookComponents/types";
 
 //Components
-import NotebooksDashboard from "@/components/NotebookComponents/NotebooksDashboard";
-import CreateNotebookLogic from "@/components/NotebookComponents/CreateNotebookLogic";
+import MarkersDashboard from "@/components/MapPinComponents/MarkersDashboard";
+import EditMarkerLogic from "@/components/MapPinComponents/unused/EditMarkerLogic";
 import EditNotebookLogic from "@/components/NotebookComponents/EditNotebookLogic";
 import MapDisplay from "@/components/MapPinComponents/MapDisplay";
 
@@ -78,7 +79,25 @@ export const getServerSideProps = (async (context) => {
     const { id, created_at, name, notebooks } = userValidation.data;
     const user = { id, created_at, name, notebooks };
 
-    return { props: { user } };
+    console.log(context.query);
+
+    const { notebookId } = context.query;
+
+    const notebook = await axios.get(
+      `https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/notebook/${notebookId}`
+    );
+
+    const markerId =
+      typeof context.query.markerId === "string" &&
+      parseInt(context.query.markerId);
+
+    return {
+      props: {
+        user,
+        notebook: notebook.data,
+        marker: { id: markerId },
+      },
+    };
   } catch (error) {
     return {
       redirect: {
@@ -88,47 +107,48 @@ export const getServerSideProps = (async (context) => {
     };
   }
 }) satisfies GetServerSideProps<{
+  marker: { id: number | false };
   user: TUser;
+  notebook: TNotebook & { pins: TPin[] };
 }>;
 
-const NotebooksPage = ({
+const MarkerPage = ({
   user,
+  notebook,
+  marker,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  type TFormTypes = "CREATE_NOTEBOOK" | "EDIT_NOTEBOOK";
+  type TFormTypes = "ADD_CONTENT" | "EDIT_MARKER";
 
   const dispatch = useDispatch();
   dispatch(setData(user));
 
-  const [userNotebooks, setUserNotebooks] = useState<TBasicData[] | []>(
-    user.notebooks
-  );
+  const [notebookMarkers, setNotebookMarkers] = useState<TPin[] | []>([]);
 
   const [modalType, setModalType] = useState<TFormTypes | false>(false);
 
-  const selectedNotebooksInitialState = userNotebooks[0];
-  const [selectedNotebook, setSelectedNotebook] = useState<
-    TBasicData | undefined
-  >(selectedNotebooksInitialState);
+  const selectedMarkerInitialState = notebook.pins.find(
+    ({ id }: TPin) => id === marker.id
+  );
+  const [selectedMarker, setSelectedMarker] = useState<TPin | undefined>(
+    selectedMarkerInitialState
+  );
 
-  const handleNotebookSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const notebookId = parseInt(e.target.value);
+  const handleMarkerSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const markerId = parseInt(e.target.value);
 
-    const notebook = userNotebooks.find(({ id }) => id === notebookId);
+    const marker = notebookMarkers.find(({ id }) => id === markerId);
 
-    setSelectedNotebook(notebook);
+    setSelectedMarker(marker);
   };
 
   const setForm = (type: TFormTypes) => {
     setModalType(type);
   };
 
-  const updateUserNotebooks = (
-    notebooks: TBasicData[] | [],
-    notebook: TBasicData
-  ) => {
+  const updateNotebookMarkers = (markers: TPin[] | [], marker: TPin) => {
     setModalType(false);
-    setUserNotebooks(notebooks);
-    setSelectedNotebook(notebook);
+    setNotebookMarkers(markers);
+    setSelectedMarker(marker);
   };
 
   const closeModal = (e: React.MouseEvent<HTMLElement>) => {
@@ -138,39 +158,37 @@ const NotebooksPage = ({
   return (
     <GeneralContainer>
       <SideBar>
-        <NotebooksDashboard
-          notebooks={userNotebooks}
-          handleNotebookSelection={handleNotebookSelection}
+        <MarkersDashboard
+          notebookTitle={notebook.title}
+          markers={notebookMarkers}
+          handleMarkerSelection={handleMarkerSelection}
           setForm={setForm}
-          selectedNotebook={selectedNotebook}
+          selectedMarker={selectedMarker}
         />
-        {selectedNotebook && (
+        {selectedMarker && (
           <div>
-            <h3>{selectedNotebook.title}</h3>
+            <h3>{selectedMarker.title}</h3>
             <i
-              onClick={setForm.bind(null, "EDIT_NOTEBOOK")}
+              onClick={setForm.bind(null, "EDIT_MARKER")}
               className="fi fi-rr-edit"
             />
-            <p>{formatDate(selectedNotebook.created_at)}</p>
-            <p>{selectedNotebook.description}</p>
+            <p>{formatDate(selectedMarker.created_at)}</p>
+            <p>{selectedMarker.description}</p>
           </div>
         )}
       </SideBar>
-      <MapDisplay id={selectedNotebook?.id} />
-      {modalType === "CREATE_NOTEBOOK" && (
-        <CreateNotebookLogic
-          updateUserNotebooks={updateUserNotebooks}
-          closeModal={closeModal}
-        />
-      )}
-      {selectedNotebook && modalType === "EDIT_NOTEBOOK" && (
-        <EditNotebookLogic
-          notebookId={selectedNotebook.id}
-          updateUserNotebooks={updateUserNotebooks}
+      {selectedMarker && modalType === "EDIT_MARKER" && (
+        <EditMarkerLogic
+          markerId={selectedMarker.id}
+          updateNotebookMarkers={updateNotebookMarkers}
           closeModal={closeModal}
           initialData={{
-            title: selectedNotebook.title,
-            description: selectedNotebook.description,
+            title: selectedMarker.title,
+            description: selectedMarker.description,
+            location: {
+              lng: selectedMarker.location.data.lng,
+              lat: selectedMarker.location.data.lat,
+            },
           }}
         />
       )}
@@ -178,4 +196,4 @@ const NotebooksPage = ({
   );
 };
 
-export default NotebooksPage;
+export default MarkerPage;

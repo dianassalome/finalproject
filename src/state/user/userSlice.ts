@@ -15,15 +15,13 @@ type TData = {
         description: string;
       }[]
     | [];
-}
+};
 
 type TUserState = {
-  token: string;
   data: TData;
-}
+};
 
 const initialState: TUserState = {
-  token: "",
   data: { id: null, created_at: null, name: "", notebooks: [] },
 };
 
@@ -31,19 +29,16 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    login: (state, action: PayloadAction<string>) => {
-      state.token = action.payload
-    },
     setData: (state, action: PayloadAction<TData>) => {
-      state.data = action.payload
+      state.data = action.payload;
     },
     logout: (state) => {
       deleteCookies("authToken");
-      return initialState
+      return initialState;
     },
   },
 });
 
-export const { login, logout, setData } = userSlice.actions;
+export const { logout, setData } = userSlice.actions;
 
 export default userSlice.reducer;
