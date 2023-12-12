@@ -20,7 +20,6 @@ import NotebooksDashboard from "@/components/NotebookComponents/NotebooksDashboa
 import CreateNotebookLogic from "@/components/NotebookComponents/CreateNotebookLogic";
 import EditNotebookLogic from "@/components/NotebookComponents/EditNotebookLogic";
 import MapDisplay from "@/components/MapPinComponents/MapDisplay";
-import Title1 from "@/components/Titles/Title1";
 
 const SideBar = emotionStyled.div`
   display: flex;
@@ -51,7 +50,6 @@ const GeneralContainer = emotionStyled.div`
   }
 `;
 
-
 type TNotebook = {
   id: number;
   created_at: number;
@@ -70,11 +68,11 @@ export const getServerSideProps = (async (context) => {
   try {
     const cookies = context.req.headers.cookie;
 
-    const cleanCookie = cookies?.replace("authToken=", "");
+    const token = cookies?.replace("authToken=", "");
 
     const userValidation = await axios.get(
       "https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/auth/me",
-      { headers: { Authorization: `Bearer ${cleanCookie}` } }
+      { headers: { Authorization: `Bearer ${token}` } }
     );
 
     const { id, created_at, name, notebooks } = userValidation.data;
@@ -96,7 +94,6 @@ export const getServerSideProps = (async (context) => {
 const NotebooksPage = ({
   user,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-
   type TFormTypes = "CREATE_NOTEBOOK" | "EDIT_NOTEBOOK";
 
   const dispatch = useDispatch();
@@ -125,10 +122,13 @@ const NotebooksPage = ({
     setModalType(type);
   };
 
-  const updateUserNotebooks = (notebooks: TBasicData[] | [], notebook: TBasicData) => {
+  const updateUserNotebooks = (
+    notebooks: TBasicData[] | [],
+    notebook: TBasicData
+  ) => {
     setModalType(false);
     setUserNotebooks(notebooks);
-    setSelectedNotebook(notebook)
+    setSelectedNotebook(notebook);
   };
 
   const closeModal = (e: React.MouseEvent<HTMLElement>) => {
@@ -147,7 +147,10 @@ const NotebooksPage = ({
         {selectedNotebook && (
           <div>
             <h3>{selectedNotebook.title}</h3>
-            <i onClick={setForm.bind(null, "EDIT_NOTEBOOK")} className="fi fi-rr-edit" />
+            <i
+              onClick={setForm.bind(null, "EDIT_NOTEBOOK")}
+              className="fi fi-rr-edit"
+            />
             <p>{formatDate(selectedNotebook.created_at)}</p>
             <p>{selectedNotebook.description}</p>
           </div>

@@ -7,7 +7,6 @@ import Login from "@/components/UserComponents/LoginLogic";
 import CenterElementsContainer from "@/components/GeneralContainers/CenterElementsContainer";
 import NextLink from "@/components/NextLink";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "@/state/user/userSlice";
 import { RootState } from "@/state/store";
 import emotionStyled from "@emotion/styled";
 
@@ -44,11 +43,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   try {
     const cookies = context.req.headers.cookie;
 
-    const cleanCookie = cookies?.replace("authToken=", "");
+    const token = cookies?.replace("authToken=", "");
 
-    const userValidation = await axios.get(
+    await axios.get(
       "https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/auth/me",
-      { headers: { Authorization: `Bearer ${cleanCookie}` } }
+      { headers: { Authorization: `Bearer ${token}` } }
     );
 
     return {

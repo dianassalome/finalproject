@@ -1,5 +1,6 @@
 import { useState } from "react";
 import styled from "@emotion/styled";
+import NextLink from "../NextLink";
 
 //Map
 import { useRef } from "react";
@@ -18,6 +19,8 @@ import { TPin } from "../NotebookComponents/types";
 
 //Components
 import CreateMarkerLogic from "./CreateMarkerLogic";
+import EditMarkerLogic from "./EditMarkerLogic";
+import MarkerDisplay from "./MarkerDisplay";
 
 type MapPinsProps = {
   pins: TPin[] | [];
@@ -50,15 +53,16 @@ const MapPins = ({ pins, notebook_id }: MapPinsProps) => {
     ? { lat: pinList[0].location.data.lat, lng: pinList[0].location.data.lng }
     : { lat: 38.707, lng: -9.13 };
 
-  // const onExpandMarkerClick = (id: number) => {
-  //   const pin = pinList.find((pin) => pin.id === id);
-  //   //Typescript - ele acha que pode não encontrar um id, então o resultado pode ser undefined
-  //   selectedPin?.id === id ? setSelectedPin(null) : setSelectedPin(pin!);
-  //   setNewLocation(null);
-  // };
+  const onExpandMarkerClick = (id: number) => {
+    const pin = pinList.find((pin) => pin.id === id);
+    //Typescript - ele acha que pode não encontrar um id, então o resultado pode ser undefined
+    selectedPin?.id === id ? setSelectedPin(null) : setSelectedPin(pin!);
+    setNewLocation(null);
+    setModalType("VIEW_MARKER");
+  };
 
   //MODALS
-  type TFormTypes = "CREATE_MARKER" | "EDIT_MARKER";
+  type TFormTypes = "CREATE_MARKER" | "VIEW_MARKER";
   const [modalType, setModalType] = useState<TFormTypes | false>(false);
 
   //SELECT LOCATION TO CREATE NEW PIN LOGIC
@@ -87,7 +91,6 @@ const MapPins = ({ pins, notebook_id }: MapPinsProps) => {
   });
 
   const onMapClick = (e: L.LeafletMouseEvent) => {
-
     setNewLocation(e.latlng);
     setSelectedPin(null);
 
@@ -107,12 +110,13 @@ const MapPins = ({ pins, notebook_id }: MapPinsProps) => {
     return null;
   };
 
-  const updateUserMarkers = (pins: TPin[] | []) => {
+  const updateNotebookMarkers = (pins: TPin[] | []) => {
     setNewLocation(null);
     setModalType(false);
     setPinList(pins);
   };
 
+  console.log(selectedPin);
   return (
     <>
       <StyledMapContainer
@@ -129,20 +133,16 @@ const MapPins = ({ pins, notebook_id }: MapPinsProps) => {
         {pinList.length &&
           pinList.map(({ id, location, title, description }) => {
             return (
-              <Marker
-                key={id}
-                position={[location.data.lat, location.data.lng]}
-                icon={icon}
-              >
+              <Marker key={id} position={location.data} icon={icon}>
                 <Popup>
                   <div>
-                    <h4>{title}</h4>
-                    {/* <i
-                      onClick={() => onExpandMarkerClick(id)}
+                    <i
+                      onClick={onExpandMarkerClick.bind(null, id)}
                       className="fi fi-br-arrow-up-right-from-square"
-                    /> */}
+                    />
+                    <h4>{title}</h4>
+                    <p>{description}</p>
                   </div>
-                  <p>{description}</p>
                 </Popup>
               </Marker>
             );
@@ -166,18 +166,18 @@ const MapPins = ({ pins, notebook_id }: MapPinsProps) => {
           location={newLocation}
           notebook_id={notebook_id}
           closeModal={closeModal}
-          updateUserMarkers={updateUserMarkers}
+          updateNotebookMarkers={updateNotebookMarkers}
         ></CreateMarkerLogic>
       )}
-      {/* {selectedPin && (
-        <MarkerContent
-          id={selectedPin.id}
-          location={selectedPin.location}
-          created_at={selectedPin.created_at}
-          title={selectedPin.title}
-          description={selectedPin.description}
+      {selectedPin && modalType === "VIEW_MARKER" && (
+        <MarkerDisplay
+          notebookId={notebook_id}
+          updateNotebookMarkers={updateNotebookMarkers}
+          closeModal={closeModal}
+          marker={selectedPin}
         />
-      )} */}
+      )}
+
     </>
   );
 };

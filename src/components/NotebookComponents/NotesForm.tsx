@@ -1,4 +1,4 @@
-import { INotesFormType } from "./types";
+import { TNotesFormType } from "./types";
 import Button from "../Button";
 import FormInputBoxes from "../FormComponents/FormInputBoxes";
 import FormLabels from "../FormComponents/FormLabels";
@@ -6,7 +6,7 @@ import InputLabelContainer from "../FormComponents/InputLabelContainer";
 import FormTextarea from "../FormComponents/FormTextarea";
 import CenterElementsContainer from "../GeneralContainers/CenterElementsContainer";
 
-const NotesForm = ({ onSubmit, onInputChange, formData }: INotesFormType) => {
+const NotesForm = ({ onSubmit, onInputChange, formData }: TNotesFormType) => {
   
   return (
     <>
