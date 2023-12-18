@@ -42,14 +42,14 @@ const NotebooksDashboard = ({
   setForm,
   selectedNotebook
 }: TDashBoardProps) => {
-
+  console.log("NOTEBOOKS",notebooks)
   return (
     <Container>
       <h1>My notebooks</h1>
       <SelectionContainer>
-      <SelectElement onChange={handleNotebookSelection}>
+      <SelectElement onChange={handleNotebookSelection} value={selectedNotebook?.id}>
         {notebooks.map(({ id, title }) => (
-          <OptionElement key={id} id={id} title={title} selected={selectedNotebook?.id === id ? true : false}/>
+          <OptionElement key={id} id={id} title={title}/>
         ))}
       </SelectElement>
       <Icon onClick={setForm.bind(null, "CREATE_NOTEBOOK")} className="fi fi-sr-square-plus" />

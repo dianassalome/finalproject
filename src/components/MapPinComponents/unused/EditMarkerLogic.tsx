@@ -1,7 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
 import emotionStyled from "@emotion/styled";
-import { useRouter } from "next/router";
 
 //Alerts
 import useSnackbar from "../CustomHooks/useSnackbar";
@@ -13,7 +12,7 @@ import { getCookies } from "@/actions/cookies";
 //Components
 import MarkerForm from "./MarkerForm";
 import MarkerModalLayout from "../ModalComponents/MarkerModalLayout";
-import EditMapCoordinates from "./EditMapCoordinates";
+import EditMapCoordinates from "./EditMap";
 
 //Types
 import { TPin } from "../NotebookComponents/types";
@@ -23,15 +22,15 @@ type TEditMarkerLogicProps = {
   notebookId: number;
   initialData: TPin;
   closeModal: React.MouseEventHandler<HTMLElement>;
-  // updateNotebookMarkers: Function;
+  updateNotebookMarkers: Function;
 };
 
 const EditMarkerLogic = ({
   notebookId,
   initialData,
   closeModal,
+  updateNotebookMarkers,
 }: TEditMarkerLogicProps) => {
-  const router = useRouter();
   const { handleSnackBarOpening, CustomSnackbar } = useSnackbar();
 
   const [formData, setFormData] = useState(initialData);
@@ -81,8 +80,7 @@ const EditMarkerLogic = ({
       });
 
       setTimeout(() => {
-        // updateNotebookMarkers(notebook.data.pins);
-        router.push(`/notes/${notebookId}/marker/${initialData.id}`);
+        updateNotebookMarkers(notebook.data.pins);
       }, 1000);
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -104,18 +102,17 @@ const EditMarkerLogic = ({
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // const notebook = await axios.get(
-      //   `https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/notebook/${notebookId}`,
-      //   { headers: { Authorization: `Bearer ${token}` } }
-      // );
+      const notebook = await axios.get(
+        `https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/notebook/${notebookId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
       handleSnackBarOpening(alertMessages.delete.success, "success", {
         name: "INFO",
       });
 
       setTimeout(() => {
-        // updateNotebookMarkers(notebook.data.pins);
-        router.push(`/notes/${notebookId}`);
+        updateNotebookMarkers(notebook.data.pins);
       }, 1000);
     } catch (error) {
       if (axios.isAxiosError(error)) {

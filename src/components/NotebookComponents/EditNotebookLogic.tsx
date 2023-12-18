@@ -64,7 +64,7 @@ const EditNotebookLogic = ({
       );
 
       setTimeout(() => {
-        updateUserNotebooks(notebooks, editedNotebook);
+        updateUserNotebooks(editedNotebook);
       }, 1000);
       
     } catch (error) {
@@ -109,7 +109,7 @@ const EditNotebookLogic = ({
       )
 
       setTimeout(() => {
-        updateUserNotebooks(notebooks, notebooks[0]);
+        updateUserNotebooks(notebooks[0]);
       }, 1000);
 
     } catch (error) {

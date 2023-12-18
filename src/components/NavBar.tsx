@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { logout } from "@/state/user/userSlice";
 import { RootState } from "@/state/store";
 import { useState, useEffect } from "react";
+import { deleteCookies } from "@/actions/cookies";
 
 //Alerts
 import alertMessages from "@/assets/alertMessages";
@@ -85,6 +86,7 @@ const NavBar = () => {
   const handleClickLogOut = () => {
 
     dispatch(logout());
+    deleteCookies("authToken")
     handleSnackBarOpening(alertMessages.logout.success, "success", {name: "INFO"})
 
     router.push("/");

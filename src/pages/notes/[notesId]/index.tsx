@@ -49,24 +49,6 @@ const GeneralContainer = emotionStyled.div`
     width: 100%;
   }
 `;
-const Container = emotionStyled.div`
-width: 100%;
-@media (max-width: 700px) {
-  height: 350px;
-}
-`;
-const PlaceholderContainer = emotionStyled.div`
-display: flex;
-height: 100%;
-justify-content: center;
-align-items: center;
-font-size: 20px;
-border-top: 1px solid rgb(230,230,230);
-@media (min-width: 700px) {
-  border: none;
-  border-left: 1px solid rgb(230,230,230);
-}
-`;
 
 type TNotebook = {
   id: number;
@@ -80,10 +62,12 @@ type TUser = {
   created_at: number | null;
   name: string;
   notebooks: TNotebook[] | [];
-} | null;
+} | null
 
-export const getServerSideProps = (async (context) => {
+export const getServerSideProps: GetServerSideProps = async (context) => {
   try {
+    const notebookId = context.query.notesId
+
     const cookies = context.req.headers.cookie;
 
     const token = cookies?.replace("authToken=", "");
@@ -94,66 +78,61 @@ export const getServerSideProps = (async (context) => {
     );
 
     const { id, created_at, name, notebooks } = userValidation.data;
-    const user = { id, created_at, name, notebooks };
+    const user = { id, created_at, name, notebooks};
 
-    return notebooks.length
-      ? {
-          redirect: {
-            permanent: false,
-            destination: `/notes/${notebooks[0].id}`,
-          },
-        }
-      : { props: { user } };
+    const notebook = await axios.get(
+      `https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/notebook/${notebookId}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    
+    // if (typeof notebookId === "string") {
+    //   const queryNotebook = notebooks.find((notebook: TNotebook) => notebook.id === parseInt(notebookId))
+    
+      return { props: { user, queryNotebook: notebook.data } };
+    
+    // }
+
+    // return { props: { user} };
+ 
   } catch (error) {
     console.log(error)
     return {
       redirect: {
         permanent: false,
-        destination: `/login`,
+        destination: `/notes`,
       },
     };
   }
-}) satisfies GetServerSideProps<{
-  user: TUser;
-}>;
+}
 
 const NotebooksPage = ({
-  user,
+  user, queryNotebook
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  type TFormTypes = "CREATE_NOTEBOOK";
+  type TFormTypes = "CREATE_NOTEBOOK" | "EDIT_NOTEBOOK";
 
   const dispatch = useDispatch();
   dispatch(setData(user));
-
-  const [userNotebooks, setUserNotebooks] = useState<TBasicData[] | []>(
-    user.notebooks
-  );
+  console.log("USER",user, user.notebooks)
+  const router = useRouter()
 
   const [modalType, setModalType] = useState<TFormTypes | false>(false);
-
-  const selectedNotebooksInitialState = userNotebooks[0];
-  const [selectedNotebook, setSelectedNotebook] = useState<
-    TBasicData | undefined
-  >(selectedNotebooksInitialState);
-
-  const router = useRouter();
 
   const handleNotebookSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const notebookId = parseInt(e.target.value);
 
-    const notebook = userNotebooks.find(({ id }) => id === notebookId);
-
-    setSelectedNotebook(notebook);
+    router.push(`/notes/${notebookId}`)
   };
 
   const setForm = (type: TFormTypes) => {
     setModalType(type);
   };
 
-  const updateUserNotebooks = (notebook: TBasicData) => {
-    console.log("ESTOU NO NOTESID", notebook?.id);
+  const updateUserNotebooks = (
+    notebook: TBasicData
+  ) => {
+    console.log("ESTOU NO NOTESID", notebook?.id)
     setModalType(false);
-    notebook?.id ? router.push(`/notes/${notebook.id}`) : router.push(`/notes`);
+    notebook?.id ? router.push(`/notes/${notebook.id}`) : router.push(`/notes`)
   };
 
   const closeModal = (e: React.MouseEvent<HTMLElement>) => {
@@ -164,21 +143,37 @@ const NotebooksPage = ({
     <GeneralContainer>
       <SideBar>
         <NotebooksDashboard
-          notebooks={userNotebooks}
+          notebooks={user.notebooks}
           handleNotebookSelection={handleNotebookSelection}
           setForm={setForm}
-          selectedNotebook={selectedNotebook}
+          selectedNotebook={queryNotebook}
         />
+        <div>
+            <h3>{queryNotebook.title}</h3>
+            <i
+              onClick={setForm.bind(null, "EDIT_NOTEBOOK")}
+              className="fi fi-rr-edit"
+            />
+            <p>{formatDate(queryNotebook.created_at)}</p>
+            <p>{queryNotebook.description}</p>
+          </div>
       </SideBar>
-      <Container>
-        <PlaceholderContainer>
-          <p>You have no notebooks.</p>
-        </PlaceholderContainer>
-      </Container>
+      <MapDisplay notebook={queryNotebook} />
       {modalType === "CREATE_NOTEBOOK" && (
         <CreateNotebookLogic
           updateUserNotebooks={updateUserNotebooks}
           closeModal={closeModal}
+        />
+      )}
+      {modalType === "EDIT_NOTEBOOK" && (
+        <EditNotebookLogic
+          notebookId={queryNotebook.id}
+          updateUserNotebooks={updateUserNotebooks}
+          closeModal={closeModal}
+          initialData={{
+            title: queryNotebook.title,
+            description: queryNotebook.description,
+          }}
         />
       )}
     </GeneralContainer>
