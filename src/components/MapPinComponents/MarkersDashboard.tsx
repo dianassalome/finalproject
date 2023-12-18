@@ -52,7 +52,7 @@ const MarkersDashboard = ({
       <SelectionContainer>
       <SelectElement onChange={handleMarkerSelection}>
         {markers.map(({ id, title }) => (
-          <OptionElement key={id} id={id} title={title} selected={selectedMarker?.id === id ? true : false}/>
+          <OptionElement key={id} id={id} title={title}/>
         ))}
       </SelectElement>
       </SelectionContainer>
