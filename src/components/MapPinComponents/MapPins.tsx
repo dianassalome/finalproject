@@ -49,7 +49,7 @@ const MapPins = ({ pins, notebook_id }: MapPinsProps) => {
   const [pinList, setPinList] = useState<TPin[] | []>(notebookPins);
 
   //PIN SELECTION LOGIC
-  const [selectedPin, setSelectedPin] = useState<TPin | null>(null);
+  // const [selectedPin, setSelectedPin] = useState<TPin | null>(null);
 
   const initialMapCoordinates = pinList.length
     ? { lat: pinList[0].location.data.lat, lng: pinList[0].location.data.lng }
@@ -58,7 +58,7 @@ const MapPins = ({ pins, notebook_id }: MapPinsProps) => {
   const onExpandMarkerClick = (id: number) => {
     const pin = pinList.find((pin) => pin.id === id);
     //Typescript - ele acha que pode não encontrar um id, então o resultado pode ser undefined
-    selectedPin?.id === id ? setSelectedPin(null) : setSelectedPin(pin!);
+    // selectedPin?.id === id ? setSelectedPin(null) : setSelectedPin(pin!);
     setNewLocation(null);
     router.push(`/notes/${notebook_id}/marker/${id}`)
     // setModalType("VIEW_MARKER");
@@ -94,7 +94,7 @@ const MapPins = ({ pins, notebook_id }: MapPinsProps) => {
 
   const onMapClick = (e: L.LeafletMouseEvent) => {
     setNewLocation(e.latlng);
-    setSelectedPin(null);
+    // setSelectedPin(null);
 
     //cuidado type any
     const tempMarker = tempMarkerRef.current;
@@ -118,7 +118,7 @@ const MapPins = ({ pins, notebook_id }: MapPinsProps) => {
     setPinList(pins);
   };
 
-  console.log(selectedPin);
+  // console.log(selectedPin);
   return (
     <>
       <StyledMapContainer
