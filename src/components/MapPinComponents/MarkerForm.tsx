@@ -6,9 +6,11 @@ import FormTextarea from "../FormComponents/FormTextarea";
 import CenterElementsContainer from "../GeneralContainers/CenterElementsContainer";
 import emotionStyled from "@emotion/styled";
 
-import EditMapCoordinates from "./EditMap";
+// import EditMapCoordinates from "./EditMapCoordinates";
 
 import { TPin } from "../NotebookComponents/types";
+
+import dynamic from "next/dynamic";
 
 const MarkerInfoContainer = emotionStyled.div`
   display: flex;
@@ -38,32 +40,38 @@ const MarkerForm = ({
   formData,
   onLocationChange,
 }: TNotesFormType) => {
+
+  const EditMap = dynamic(() => import("./EditMapCoordinates"), {
+    loading: () => <p>A map is loading</p>,
+    ssr: false,
+  });
+
   return (
     <>
       <MarkerInfoContainer>
         <form onSubmit={onSubmit}>
           <CenterElementsContainer>
-              <InputLabelContainer>
-                <FormLabels htmlFor="title">Title</FormLabels>
-                <FormInputBoxes
-                  onChange={onInputChange}
-                  value={formData.title}
-                  name="title"
-                />
-              </InputLabelContainer>
-              <InputLabelContainer>
-                <FormLabels htmlFor="description">Description</FormLabels>
-                <FormTextarea
-                  onChange={onInputChange}
-                  value={formData.description}
-                  name="description"
-                  rows={8}
-                />
-              </InputLabelContainer>
+            <InputLabelContainer>
+              <FormLabels htmlFor="title">Title</FormLabels>
+              <FormInputBoxes
+                onChange={onInputChange}
+                value={formData.title}
+                name="title"
+              />
+            </InputLabelContainer>
+            <InputLabelContainer>
+              <FormLabels htmlFor="description">Description</FormLabels>
+              <FormTextarea
+                onChange={onInputChange}
+                value={formData.description}
+                name="description"
+                rows={8}
+              />
+            </InputLabelContainer>
             <Button>Submit</Button>
           </CenterElementsContainer>
         </form>
-        <EditMapCoordinates
+        <EditMap
           location={formData.location.data}
           onLocationChange={onLocationChange}
         />

@@ -14,6 +14,7 @@ const verifyAuthentication = async (cookie: string | undefined) => {
     
 
   } catch (error) {
+    console.log(error)
     return false
   }
 }

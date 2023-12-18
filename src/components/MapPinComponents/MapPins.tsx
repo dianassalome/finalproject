@@ -1,6 +1,7 @@
 import { useState } from "react";
 import styled from "@emotion/styled";
 import NextLink from "../NextLink";
+import { useRouter } from "next/router";
 
 //Map
 import { useRef } from "react";
@@ -20,7 +21,7 @@ import { TPin } from "../NotebookComponents/types";
 //Components
 import CreateMarkerLogic from "./CreateMarkerLogic";
 import EditMarkerLogic from "./EditMarkerLogic";
-import MarkerDisplay from "./MarkerDisplay";
+
 
 type MapPinsProps = {
   pins: TPin[] | [];
@@ -39,6 +40,7 @@ const TempMarkerPopup = styled.a`
 `;
 
 const MapPins = ({ pins, notebook_id }: MapPinsProps) => {
+  const router = useRouter()
   const mapRef = useRef(null);
   const tempMarkerRef = useRef(null);
 
@@ -58,12 +60,12 @@ const MapPins = ({ pins, notebook_id }: MapPinsProps) => {
     //Typescript - ele acha que pode não encontrar um id, então o resultado pode ser undefined
     selectedPin?.id === id ? setSelectedPin(null) : setSelectedPin(pin!);
     setNewLocation(null);
-    setModalType("VIEW_MARKER");
+    router.push(`/notes/${notebook_id}/marker/${id}`)
+    // setModalType("VIEW_MARKER");
   };
 
   //MODALS
-  type TFormTypes = "CREATE_MARKER" | "VIEW_MARKER";
-  const [modalType, setModalType] = useState<TFormTypes | false>(false);
+  const [modalType, setModalType] = useState<"CREATE_MARKER" | false>(false);
 
   //SELECT LOCATION TO CREATE NEW PIN LOGIC
   const [newLocation, setNewLocation] = useState<{
@@ -169,15 +171,14 @@ const MapPins = ({ pins, notebook_id }: MapPinsProps) => {
           updateNotebookMarkers={updateNotebookMarkers}
         ></CreateMarkerLogic>
       )}
-      {selectedPin && modalType === "VIEW_MARKER" && (
+      {/* {selectedPin && modalType === "VIEW_MARKER" && (
         <MarkerDisplay
           notebookId={notebook_id}
           updateNotebookMarkers={updateNotebookMarkers}
           closeModal={closeModal}
           marker={selectedPin}
         />
-      )}
-
+      )} */}
     </>
   );
 };

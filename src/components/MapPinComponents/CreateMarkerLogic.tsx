@@ -11,6 +11,7 @@ import { getCookies } from "@/actions/cookies";
 //Components
 import NotesForm from "../NotebookComponents/NotesForm";
 import ModalLayout from "../ModalComponents/ModalLayout";
+import MarkerModalLayout from "../ModalComponents/MarkerModalLayout";
 
 //Types
 import { TMarkerCreation } from "./types";
@@ -73,13 +74,13 @@ const CreateMarkerLogic = ({
 
   return (
     <>
-      <ModalLayout closeModal={closeModal}>
+      <MarkerModalLayout closeModal={closeModal}>
         <NotesForm
           onSubmit={onSubmit}
           onInputChange={onInputChange}
           formData={formData}
         />
-      </ModalLayout>
+      </MarkerModalLayout>
       <CustomSnackbar />
     </>
   );

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import emotionStyled from "@emotion/styled";
+import { useRouter } from "next/router";
 
 //Alerts
 import useSnackbar from "../CustomHooks/useSnackbar";
@@ -12,24 +13,25 @@ import { getCookies } from "@/actions/cookies";
 //Components
 import MarkerForm from "./MarkerForm";
 import MarkerModalLayout from "../ModalComponents/MarkerModalLayout";
-import EditMapCoordinates from "./EditMap";
+import EditMapCoordinates from "./EditMapCoordinates";
 
 //Types
 import { TPin } from "../NotebookComponents/types";
+import { RedButton } from "../FormComponents/RedButton";
 
 type TEditMarkerLogicProps = {
   notebookId: number;
   initialData: TPin;
   closeModal: React.MouseEventHandler<HTMLElement>;
-  updateNotebookMarkers: Function;
+  // updateNotebookMarkers: Function;
 };
 
 const EditMarkerLogic = ({
   notebookId,
   initialData,
   closeModal,
-  updateNotebookMarkers,
 }: TEditMarkerLogicProps) => {
+  const router = useRouter();
   const { handleSnackBarOpening, CustomSnackbar } = useSnackbar();
 
   const [formData, setFormData] = useState(initialData);
@@ -74,20 +76,13 @@ const EditMarkerLogic = ({
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // const { id, created_at, name, pins } = user.data;
-
-      // dispatch(setData({ id, created_at, name, notebooks }));
-
-      //   const editedMarker = notebook.data.pins.find(
-      //     ({ id }: TPin) => initialData.id === id
-      //   );
-
       handleSnackBarOpening(alertMessages.edit.success, "success", {
         name: "INFO",
       });
 
       setTimeout(() => {
-        updateNotebookMarkers(notebook.data.pins);
+        // updateNotebookMarkers(notebook.data.pins);
+        router.push(`/notes/${notebookId}/marker/${initialData.id}`);
       }, 1000);
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -99,7 +94,39 @@ const EditMarkerLogic = ({
       }
     }
   };
-  console.log("AQUI ESTOU EU");
+
+  const handleDeleteButton = async () => {
+    try {
+      const token = await getCookies("authToken");
+
+      await axios.delete(
+        `https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/pin/${initialData.id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      // const notebook = await axios.get(
+      //   `https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/notebook/${notebookId}`,
+      //   { headers: { Authorization: `Bearer ${token}` } }
+      // );
+
+      handleSnackBarOpening(alertMessages.delete.success, "success", {
+        name: "INFO",
+      });
+
+      setTimeout(() => {
+        // updateNotebookMarkers(notebook.data.pins);
+        router.push(`/notes/${notebookId}`);
+      }, 1000);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error(error.response?.data.message);
+        const message = error.response?.data.message;
+        handleSnackBarOpening(message, "error", { name: "INFO" });
+      } else {
+        console.error(error);
+      }
+    }
+  };
 
   return (
     <MarkerModalLayout closeModal={closeModal}>
@@ -109,6 +136,16 @@ const EditMarkerLogic = ({
         formData={formData}
         onLocationChange={onLocationChange}
       />
+      <RedButton
+        onClick={handleSnackBarOpening.bind(
+          null,
+          alertMessages.delete.warning,
+          "warning",
+          { name: "CHOICE", function: handleDeleteButton, button: "Delete" }
+        )}
+      >
+        Delete marker
+      </RedButton>
       <CustomSnackbar />
     </MarkerModalLayout>
   );
