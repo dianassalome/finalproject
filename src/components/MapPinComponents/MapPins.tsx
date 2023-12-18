@@ -21,7 +21,7 @@ import { TPin } from "../NotebookComponents/types";
 //Components
 import CreateMarkerLogic from "./CreateMarkerLogic";
 import EditMarkerLogic from "./EditMarkerLogic";
-import MarkerDisplay from "./unused/MarkerDisplay";
+
 
 type MapPinsProps = {
   pins: TPin[] | [];
