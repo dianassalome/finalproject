@@ -17,7 +17,7 @@ const ModalContainer = emotionStyled.div`
     width: 100%;
     height: 100%;
     padding: 20px;
-    overflow: auto;
+    // overflow: auto;
     @media (min-width: 700px) {
       width: 80%;
       height: 80%;

@@ -22,29 +22,28 @@ width: 100%;
 }
 `;
 
-const MapDisplay = ({ notebook }: TNotebookProps) => {
+const MapDisplay = ({ id }: {id: number}) => {
+  const [notebook, setNotebook] = useState<TNotebook | undefined>();
 
-  // const [notebook, setNotebook] = useState<TNotebook | undefined>();
+  useEffect(() => {
+    const fetchNotebook = async () => {
+      try {
+        if (id) {
+          const token = await getCookies("authToken");
 
-  // useEffect(() => {
-  //   const fetchNotebook = async () => {
-  //     try {
-  //       if (id) {
-  //         const token = await getCookies("authToken");
+          const notebook = await axios.get(
+            `https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/notebook/${id}`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
 
-  //         const notebook = await axios.get(
-  //           `https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/notebook/${id}`,
-  //           { headers: { Authorization: `Bearer ${token}` } }
-  //         );
-
-  //         setNotebook(notebook.data);
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   };
-  //   fetchNotebook();
-  // }, [id]);
+          setNotebook(notebook.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchNotebook();
+  }, [id]);
 
   const Map = dynamic(() => import("./MapPins"), {
     loading: () => <p>A map is loading</p>,
@@ -53,10 +52,7 @@ const MapDisplay = ({ notebook }: TNotebookProps) => {
 
   return (
     <Container>
-       <Map pins={notebook.pins} notebook_id={notebook.id} />
-      {/* {notebook && (
-       
-      )} */}
+      {notebook && <Map pins={notebook.pins} notebook_id={notebook.id} />}
     </Container>
   );
 };
