@@ -158,7 +158,7 @@ const NotebooksPage = ({
             <p>{queryNotebook.description}</p>
           </div>
       </SideBar>
-      <MapDisplay notebook={queryNotebook} />
+      <MapDisplay id={queryNotebook.id} />
       {modalType === "CREATE_NOTEBOOK" && (
         <CreateNotebookLogic
           updateUserNotebooks={updateUserNotebooks}
