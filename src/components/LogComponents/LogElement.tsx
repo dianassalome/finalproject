@@ -15,7 +15,19 @@ const ImgContainer = emotionStyled.div`
 display: flex;
 justify-content: center;
 align-items: center;
+position: relative;
+`;
 
+const Icon = emotionStyled.i`
+display: flex;
+position: absolute;
+z-index: 1;
+background-color: rgba(255, 255, 255, 0.7);
+border-radius: 10px;
+padding: 5px;
+top: 0;
+right: 0;
+font-size: 20px;
 `;
 
 const Img = emotionStyled.img`
@@ -34,20 +46,26 @@ border-radius: 10px;
 
 const Audio = emotionStyled.audio`
 width: 100%;
-`
+`;
 
 const LogElement = ({ log }: { log: TLogFormData }) => {
   const { url, mimetype } = log.file;
 
   const [modal, setModal] = useState(false);
 
-  const closeModal: React.MouseEventHandler<HTMLElement> = () => {
-    setModal(false);
+  const closeModal = (e: React.MouseEvent<HTMLElement>) => {
+    if (e.target === e.currentTarget) {
+      setModal(false);
+    }
   };
 
   return (
     <>
       <ImgContainer>
+        <Icon
+          onClick={() => setModal(true)}
+          className="fi fi-br-arrow-up-right-from-square"
+        />
         {mimetype.includes("image") && <Img src={url}></Img>}
         {mimetype.includes("video") && (
           <Video controls>
@@ -60,7 +78,7 @@ const LogElement = ({ log }: { log: TLogFormData }) => {
           </Audio>
         )}
       </ImgContainer>
-      {/* {modal && <DisplayLog log={log} closeModal={closeModal} />} */}
+      {modal && <DisplayLog log={log} closeModal={closeModal} />}
     </>
   );
 };

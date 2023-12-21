@@ -44,9 +44,11 @@ const MapPins = ({ pins, notebook_id }: MapPinsProps) => {
   const mapRef = useRef(null);
   const tempMarkerRef = useRef(null);
 
+  console.log("PINS",pins)
+
   const notebookPins = pins;
 
-  const [pinList, setPinList] = useState<TPin[] | []>(notebookPins);
+  const [pinList, setPinList] = useState<TPin[] | []>(notebookPins || []);
 
   //PIN SELECTION LOGIC
   // const [selectedPin, setSelectedPin] = useState<TPin | null>(null);

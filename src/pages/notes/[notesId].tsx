@@ -68,6 +68,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   try {
     const notebookId = context.query.notesId
 
+    // if (!notebookId) {
+    //   return {
+    //     redirect: {
+    //       permanent: false,
+    //       destination: `/notes`,
+    //     },
+    //   };
+    // }
+
     const cookies = context.req.headers.cookie;
 
     const token = cookies?.replace("authToken=", "");
@@ -79,27 +88,21 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
     const { id, created_at, name, notebooks } = userValidation.data;
     const user = { id, created_at, name, notebooks};
+    
+    if (typeof notebookId === "string") {
+      const queryNotebook = notebooks.find((notebook: TNotebook) => notebook.id === parseInt(notebookId))
+    
+      return { props: { user, queryNotebook } };
+    
+    }
 
-    const notebook = await axios.get(
-      `https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/notebook/${notebookId}`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    
-    // if (typeof notebookId === "string") {
-    //   const queryNotebook = notebooks.find((notebook: TNotebook) => notebook.id === parseInt(notebookId))
-    
-      return { props: { user, queryNotebook: notebook.data } };
-    
-    // }
-
-    // return { props: { user} };
+    return { props: { user} };
  
   } catch (error) {
-    console.log(error)
     return {
       redirect: {
         permanent: false,
-        destination: `/notes`,
+        destination: `/login`,
       },
     };
   }
