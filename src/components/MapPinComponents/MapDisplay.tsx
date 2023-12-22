@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import emotionStyled from "@emotion/styled";
+import { useSelector } from "react-redux";
+import { RootState } from "@/state/store";
 
 //Conditional rendering
 import dynamic from "next/dynamic";
@@ -22,28 +24,23 @@ width: 100%;
 }
 `;
 
-const MapDisplay = ({ id }: {id: number}) => {
-  const [notebook, setNotebook] = useState<TNotebook | undefined>();
+const PlaceholderContainer = emotionStyled.div`
+display: flex;
+height: 100%;
+justify-content: center;
+align-items: center;
+font-size: 20px;
+border-top: 1px solid rgb(230,230,230);
+@media (min-width: 700px) {
+  border: none;
+  border-left: 1px solid rgb(230,230,230);
+}
+`;
 
-  useEffect(() => {
-    const fetchNotebook = async () => {
-      try {
-        if (id) {
-          const token = await getCookies("authToken");
-
-          const notebook = await axios.get(
-            `https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/notebook/${id}`,
-            { headers: { Authorization: `Bearer ${token}` } }
-          );
-
-          setNotebook(notebook.data);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchNotebook();
-  }, [id]);
+const MapDisplay = () => {
+  const storedNotebook = useSelector(
+    (state: RootState) => state.notes.notebook
+  );
 
   const Map = dynamic(() => import("./MapPins"), {
     loading: () => <p>A map is loading</p>,
@@ -52,7 +49,13 @@ const MapDisplay = ({ id }: {id: number}) => {
 
   return (
     <Container>
-      {notebook && <Map pins={notebook.pins} notebook_id={notebook.id} />}
+      {storedNotebook ? (
+        <Map pins={storedNotebook.pins} />
+      ) : (
+        <PlaceholderContainer>
+          <p>You have no notebooks.</p>
+        </PlaceholderContainer>
+      )}
     </Container>
   );
 };

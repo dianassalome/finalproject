@@ -1,7 +1,9 @@
 import { useState } from "react";
 import styled from "@emotion/styled";
-import NextLink from "../NextLink";
+import NextLink from "../GeneralComponents/NextLink";
 import { useRouter } from "next/router";
+import { useDispatch } from "react-redux";
+import { selectMarker } from "@/state/notebook/notesSlice";
 
 //Map
 import { useRef } from "react";
@@ -16,16 +18,40 @@ import {
 import "leaflet/dist/leaflet.css";
 
 //Types
-import { TPin } from "../NotebookComponents/types";
+// import { TPin } from "../NotebookComponents/types";
 
 //Components
 import CreateMarkerLogic from "./CreateMarkerLogic";
 import EditMarkerLogic from "./EditMarkerLogic";
 
+type TBasicData = {
+  id: number;
+  created_at: number;
+  title: string;
+  description: string;
+};
+
+type TLog = TBasicData & {
+  file: { url: string; mimetype: string };
+  pin_id: number;
+  user_id: number;
+};
+
+type TPin = TBasicData & {
+  location: {
+    type: string;
+    data: {
+      lng: number;
+      lat: number;
+    };
+  };
+  notebook_id: number;
+  logs: [] | TLog[]
+};
+
 
 type MapPinsProps = {
   pins: TPin[] | [];
-  notebook_id: number;
 };
 
 const StyledMapContainer = styled(MapContainer)`
@@ -39,16 +65,17 @@ const TempMarkerPopup = styled.a`
   font-size: 16px;
 `;
 
-const MapPins = ({ pins, notebook_id }: MapPinsProps) => {
-  const router = useRouter()
+const MapPins = ({ pins }: MapPinsProps) => {
+  const router = useRouter();
   const mapRef = useRef(null);
   const tempMarkerRef = useRef(null);
+  const dispatch = useDispatch()
 
-  console.log("PINS",pins)
+  console.log("PINS", pins);
 
   const notebookPins = pins;
 
-  const [pinList, setPinList] = useState<TPin[] | []>(notebookPins || []);
+  const [pinList, setPinList] = useState<TPin[] | []>(pins || []);
 
   //PIN SELECTION LOGIC
   // const [selectedPin, setSelectedPin] = useState<TPin | null>(null);
@@ -59,11 +86,10 @@ const MapPins = ({ pins, notebook_id }: MapPinsProps) => {
 
   const onExpandMarkerClick = (id: number) => {
     const pin = pinList.find((pin) => pin.id === id);
-    //Typescript - ele acha que pode não encontrar um id, então o resultado pode ser undefined
-    // selectedPin?.id === id ? setSelectedPin(null) : setSelectedPin(pin!);
+    pin && dispatch(selectMarker(pin))
+
     setNewLocation(null);
-    router.push(`/notes/${notebook_id}/marker/${id}`)
-    // setModalType("VIEW_MARKER");
+    router.push(`/notes/marker/`);
   };
 
   //MODALS
@@ -87,7 +113,6 @@ const MapPins = ({ pins, notebook_id }: MapPinsProps) => {
     iconAnchor: [17, 35],
   });
 
-  //iconAnchor: [largura/2, altura+1px]
   const tempIcon = L.icon({
     iconUrl: "/map/red_marker.png",
     iconSize: [34, 34],
@@ -96,7 +121,6 @@ const MapPins = ({ pins, notebook_id }: MapPinsProps) => {
 
   const onMapClick = (e: L.LeafletMouseEvent) => {
     setNewLocation(e.latlng);
-    // setSelectedPin(null);
 
     //cuidado type any
     const tempMarker = tempMarkerRef.current;
@@ -168,19 +192,10 @@ const MapPins = ({ pins, notebook_id }: MapPinsProps) => {
       {modalType === "CREATE_MARKER" && (
         <CreateMarkerLogic
           location={newLocation}
-          notebook_id={notebook_id}
           closeModal={closeModal}
           updateNotebookMarkers={updateNotebookMarkers}
         ></CreateMarkerLogic>
       )}
-      {/* {selectedPin && modalType === "VIEW_MARKER" && (
-        <MarkerDisplay
-          notebookId={notebook_id}
-          updateNotebookMarkers={updateNotebookMarkers}
-          closeModal={closeModal}
-          marker={selectedPin}
-        />
-      )} */}
     </>
   );
 };

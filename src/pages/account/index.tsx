@@ -13,7 +13,7 @@ import useSnackbar from "@/components/CustomHooks/useSnackbar";
 
 //Components
 import CenterElementsContainer from "@/components/GeneralContainers/CenterElementsContainer";
-import Button from "@/components/Button";
+import Button from "@/components/GeneralComponents/Button";
 import UserForm from "@/components/UserComponents/UserForm";
 import { RedButton } from "@/components/FormComponents/RedButton";
 
@@ -113,7 +113,9 @@ const AccountSettings = ({
       <Container>
         <Button onClick={handleEditButton}>
           {editMode ? (
-            <><i className="fi fi-br-cross-circle" /> Cancel</>
+            <>
+              <i className="fi fi-br-cross-circle" /> Cancel
+            </>
           ) : (
             <>
               <i className="fi fi-rr-edit" /> Edit

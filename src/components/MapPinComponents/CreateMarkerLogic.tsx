@@ -1,6 +1,10 @@
 import { useState } from "react";
 import axios from "axios";
 
+//Context
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "@/state/store";
+
 //Alerts
 import alertMessages from "@/assets/alertMessages";
 import useSnackbar from "../CustomHooks/useSnackbar";
@@ -10,15 +14,14 @@ import { getCookies } from "@/actions/cookies";
 
 //Components
 import NotesForm from "../NotebookComponents/NotesForm";
-import ModalLayout from "../ModalComponents/ModalLayout";
 import MarkerModalLayout from "../ModalComponents/MarkerModalLayout";
 
 //Types
 import { TMarkerCreation } from "./types";
+import { selectNotebook } from "@/state/notebook/notesSlice";
 
 const CreateMarkerLogic = ({
   location,
-  notebook_id,
   closeModal,
   updateNotebookMarkers,
 }: TMarkerCreation) => {
@@ -27,6 +30,11 @@ const CreateMarkerLogic = ({
     title: "",
     description: "",
   };
+
+  const dispatch = useDispatch()
+  const storedNotebook = useSelector(
+    (state: RootState) => state.notes.notebook
+  );
 
   const [formData, setFormData] = useState(initialFormData);
 
@@ -49,6 +57,8 @@ const CreateMarkerLogic = ({
 
       const { title, description } = formData;
 
+      const notebook_id = storedNotebook?.id
+
       const notebook = await axios.post(
         "https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/pin",
         { title, description, notebook_id, location },
@@ -58,6 +68,7 @@ const CreateMarkerLogic = ({
       handleSnackBarOpening(alertMessages.create.success, "success", {name: "INFO"});
 
       setTimeout(() => {
+        dispatch(selectNotebook(notebook.data))
         updateNotebookMarkers(notebook.data.pins);
       }, 1000);
 

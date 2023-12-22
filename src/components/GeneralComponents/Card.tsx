@@ -1,22 +1,22 @@
 import emotionStyled from "@emotion/styled";
-import CenterElementsContainer from "./GeneralContainers/CenterElementsContainer";
+import CenterElementsContainer from "../GeneralContainers/CenterElementsContainer";
 
 type TPicLabelCard = {
   image: string;
   text: string;
-}
+};
 
 const Image = emotionStyled.img`
 width: 80%;
-`
+`;
 const Text = emotionStyled.p`
 text-align: center;
-`
+`;
 
 const Card = ({ image, text }: TPicLabelCard) => {
   return (
     <CenterElementsContainer>
-      <Image src={image} alt={text}/>
+      <Image src={image} alt={text} />
       <Text>{text}</Text>
     </CenterElementsContainer>
   );

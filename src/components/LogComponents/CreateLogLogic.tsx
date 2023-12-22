@@ -8,42 +8,47 @@ import { PickerFileMetadata } from "filestack-js";
 import { PickerOverlay } from "filestack-react";
 import formatDate from "@/actions/formatDate";
 import NotesForm from "../NotebookComponents/NotesForm";
-import Button from "../Button";
+import Button from "../GeneralComponents/Button";
 import useSnackbar from "../CustomHooks/useSnackbar";
 import ModalLayout from "../ModalComponents/ModalLayout";
 import alertMessages from "@/assets/alertMessages";
 import { useRouter } from "next/router";
 
+import FormInputBoxes from "../FormComponents/FormInputBoxes";
+import InputLabelContainer from "../FormComponents/InputLabelContainer";
+
+import CenterElementsContainer from "../GeneralContainers/CenterElementsContainer";
+
+//Context
+import { useDispatch } from "react-redux";
+
 const CreateLogLogic = ({
-  id,
+  markerId,
   closeModal,
   onLogCreation,
-  notebookId
 }: {
-  id: number;
+  markerId: number;
   closeModal: React.MouseEventHandler<HTMLElement>;
-  onLogCreation: Function
-  notebookId: number
+  onLogCreation: Function;
 }) => {
-
-  const router = useRouter()
+  const router = useRouter();
   const { handleSnackBarOpening, CustomSnackbar } = useSnackbar();
   const [showPicker, setShowPicker] = useState(false);
   // const [mediaContent, setMediaContent] = useState([]);
 
-  type TLogFormData = TNotesFormData & {
+  type TLogFormData = {
+    title: string;
     file?: JSON | {};
   };
 
   const initialFormData = {
     title: "",
-    description: "",
   };
 
   const [formData, setFormData] = useState<TLogFormData>(initialFormData);
 
   const handleClick = () => {
-    formData.title && formData.description
+    formData.title
       ? setShowPicker((prevState) => !prevState)
       : handleSnackBarOpening("Insert title and description.", "warning", {
           name: "INFO",
@@ -54,7 +59,6 @@ const CreateLogLogic = ({
     try {
       //ele não reconhece o tipo de ficheiro
       const file = res.filesUploaded[0];
-
 
       setFormData({
         ...formData,
@@ -88,35 +92,29 @@ const CreateLogLogic = ({
 
       const token = await getCookies("authToken");
 
-      const { title, description, file } = formData;
+      const { title, file } = formData;
 
       console.log("FILE AQUI", file);
 
       const log = await axios.post(
         "https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/log",
-        { title, description, pin_id: id, file },
+        { title, pin_id: markerId, file },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      // const pin = await axios.get(
-      //   `https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/pin/${id}`,
-      //   { headers: { Authorization: `Bearer ${token}` } }
-      // );
-
-      // console.log("FETCHED PIN", pin.data);
-      // setMarkerLogs(pin.data.logs);
-      // await fetchPin()
 
       console.log("RESULTADO DO CREATE LOG", log.data);
       setFormData(initialFormData);
       setShowPicker(false);
       onLogCreation();
-      handleSnackBarOpening(alertMessages.create.success, "success", {name: "INFO"})
+
+      handleSnackBarOpening(alertMessages.create.success, "success", {
+        name: "INFO",
+      });
 
       setTimeout(() => {
-        router.push(`/notes/${notebookId}/marker/${id}`);
+        // dispatch(select)
+        // router.push(`/notes/marker/`);
       }, 1000);
-
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error(error.response?.data.message);
@@ -130,11 +128,19 @@ const CreateLogLogic = ({
 
   return (
     <ModalLayout closeModal={closeModal}>
-      <NotesForm
-        onSubmit={onSubmit}
-        onInputChange={onInputChange}
-        formData={formData}
-      />
+      <form onSubmit={onSubmit}>
+        <CenterElementsContainer>
+          <InputLabelContainer>
+            <label htmlFor="title">Title</label>
+            <FormInputBoxes
+              onChange={onInputChange}
+              value={formData.title}
+              name="title"
+            />
+          </InputLabelContainer>
+          <Button>Submit</Button>
+        </CenterElementsContainer>
+      </form>
       <Button onClick={handleClick}>Choose File</Button>
       {showPicker && (
         <PickerOverlay

@@ -5,11 +5,11 @@ import type { GetServerSideProps } from "next";
 import axios from "axios";
 
 //Components
-import Card from "@/components/Card";
-import Button from "@/components/Button";
+import Card from "@/components/GeneralComponents/Card";
+import Button from "@/components/GeneralComponents/Button";
 import CenterElementsContainer from "@/components/GeneralContainers/CenterElementsContainer";
-import NextLink from "@/components/NextLink";
-import Title1 from "@/components/Titles/Title1";
+import NextLink from "@/components/GeneralComponents/NextLink";
+import Title1 from "@/components/GeneralComponents/Title1";
 
 const TilesSection = emotionStyled.section`
 display: flex;
@@ -19,7 +19,7 @@ margin: 0 50px;
   flex-direction: row;
   justify-content: space-between;
 }
-`
+`;
 
 const SubText = emotionStyled.p`
 text-align: center;
@@ -28,7 +28,7 @@ margin-top: -20px;
 @media (min-width: 650px) {
   font-size: 22px;
 }
-`
+`;
 
 const ArrowIcon = emotionStyled.i`
   font-size: 22px;
@@ -81,10 +81,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
     const token = cookies?.replace("authToken=", "");
 
-    await axios.get(
-      "https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/auth/me",
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+    await axios.get("https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/auth/me", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
     return {
       redirect: {
@@ -93,7 +92,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return { props: {} };
   }
 };

@@ -1,5 +1,5 @@
 import emotionStyled from "@emotion/styled";
-import Button from "../Button";
+import Button from "../GeneralComponents/Button";
 import { RedButton } from "../FormComponents/RedButton";
 import useSnackbar from "../CustomHooks/useSnackbar";
 import alertMessages from "@/assets/alertMessages";
@@ -10,6 +10,9 @@ import { TNotesFormData } from "../NotebookComponents/types";
 import MarkerModalLayout from "../ModalComponents/MarkerModalLayout";
 import { useState } from "react";
 import FormInputBoxes from "../FormComponents/FormInputBoxes";
+import { useSelector } from "react-redux";
+import { RootState } from "@/state/store";
+
 
 type TLogFormData = TNotesFormData & {
   id: number;
@@ -36,7 +39,7 @@ const Img = emotionStyled.img`
   }
   `;
 
-  const Video = emotionStyled.video`
+const Video = emotionStyled.video`
   width: 290px;
   @media (min-width: 700px) {
     width: 500px;
@@ -55,20 +58,25 @@ const Form = emotionStyled.form`
   gap: 5px;
   padding: 5px;
   align-items: center;
-`
+`;
+
+
 
 const DisplayLog = ({
   log,
   closeModal,
+  fetchLogs
 }: {
   log: TLogFormData;
   closeModal: React.MouseEventHandler<HTMLElement>;
+  fetchLogs: Function
 }) => {
+  const [selectedLog, setSelectedLog] = useState(log)
   const [editMode, setEditMode] = useState(false);
   const [titleInput, setTitleInput] = useState("");
   const { handleSnackBarOpening, CustomSnackbar } = useSnackbar();
 
-  const { id, title, file, created_at } = log;
+  const { id, title, file, created_at } = selectedLog;
   console.log("ID DO LOG", id);
 
   const handleDeleteButton = async () => {
@@ -83,6 +91,13 @@ const DisplayLog = ({
       handleSnackBarOpening(alertMessages.delete.success, "success", {
         name: "INFO",
       });
+
+      await fetchLogs()
+
+      setTimeout(() => {
+        setEditModeOff()
+      }, 1000);
+
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error(error);
@@ -99,65 +114,79 @@ const DisplayLog = ({
     e.preventDefault();
 
     await editLog();
-    setEditModeOff()
+    await fetchLogs()
+    setEditModeOff();
   };
 
   const editLog = async () => {
-   try {
-    const token = await getCookies("authToken");
+    try {
+      const token = await getCookies("authToken");
 
-    await axios.patch(
-      `https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/log/${id}`,
-      { title: titleInput },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+      const editedLog = await axios.patch(
+        `https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/log/${id}`,
+        { title: titleInput },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-     handleSnackBarOpening(alertMessages.edit.success, "success", {
-      name: "INFO",
-    });
-   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error(error);
-      console.error(error.response?.data.message);
-      const message = error.response?.data.message;
-      handleSnackBarOpening(message, "error", { name: "INFO" });
-    } else {
-      console.error(error);
+      handleSnackBarOpening(alertMessages.edit.success, "success", {
+        name: "INFO",
+      });
+
+      setTimeout(() => {
+        setSelectedLog(editedLog.data)
+      }, 1000);
+      
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error(error);
+        console.error(error.response?.data.message);
+        const message = error.response?.data.message;
+        handleSnackBarOpening(message, "error", { name: "INFO" });
+      } else {
+        console.error(error);
+      }
     }
-   }
   };
 
   const setEditModeOff = () => {
     setEditMode(false);
     setTitleInput("");
-  }
+  };
 
   return (
     <MarkerModalLayout closeModal={closeModal}>
       <Container>
-        {!editMode && <i onClick={() => setEditMode(true)} className="fi fi-rr-edit" />}
+        {!editMode && (
+          <i onClick={() => setEditMode(true)} className="fi fi-rr-edit" />
+        )}
         {!editMode && <h3>{title}</h3>}
         {editMode && (
           <Form onSubmit={handleSubmitButton}>
-            <FormInputBoxes onChange={(e) => setTitleInput(e.target.value)} placeholder={title} value={titleInput} />
-            <Button><i className="fi fi-br-check-circle" /></Button>
+            <FormInputBoxes
+              onChange={(e) => setTitleInput(e.target.value)}
+              placeholder={title}
+              value={titleInput}
+            />
+            <Button>
+              <i className="fi fi-br-check-circle" />
+            </Button>
             <i onClick={setEditModeOff} className="fi fi-br-cross-circle" />
           </Form>
         )}
         <p>{formatDate(created_at)}</p>
         <ImgContainer>
           <a href={file.url}>
-          {file.mimetype.includes("image") && <Img src={file.url} />}
-        {file.mimetype.includes("video") && (
-          <Video controls>
-            <source src={file.url} type={file.mimetype} />
-          </Video>
-        )}
-        {file.mimetype.includes("audio") && (
-          <Audio controls>
-            <source src={file.url} type={file.mimetype} />
-          </Audio>
-        )}
+            {file.mimetype.includes("image") && <Img src={file.url} />}
+            {file.mimetype.includes("video") && (
+              <Video controls>
+                <source src={file.url} type={file.mimetype} />
+              </Video>
+            )}
+            {file.mimetype.includes("audio") && (
+              <Audio controls>
+                <source src={file.url} type={file.mimetype} />
+              </Audio>
+            )}
           </a>
         </ImgContainer>
         {editMode && (

@@ -1,12 +1,12 @@
+//Types
 import { TFormType } from "@/components/UserComponents/types";
 
 //Components
-import Button from "../Button";
+import Button from "../GeneralComponents/Button";
 import FormInputBoxes from "../FormComponents/FormInputBoxes";
-import FormLabels from "../FormComponents/FormLabels";
 import InputLabelContainer from "../FormComponents/InputLabelContainer";
 import CenterElementsContainer from "../GeneralContainers/CenterElementsContainer";
-import Title1 from "../Titles/Title1";
+import Title1 from "../GeneralComponents/Title1";
 
 const UserForm = ({
   formType,
@@ -21,7 +21,7 @@ const UserForm = ({
         <Title1>{formType}</Title1>
         {(formType === "Sign up" || formType === "") && (
           <InputLabelContainer>
-            <FormLabels htmlFor="name">Name</FormLabels>
+            <label htmlFor="name">Name</label>
             <FormInputBoxes
               onChange={onInputChange}
               value={formData.name}
@@ -32,7 +32,7 @@ const UserForm = ({
           </InputLabelContainer>
         )}
         <InputLabelContainer>
-          <FormLabels htmlFor="email">Email</FormLabels>
+          <label htmlFor="email">Email</label>
           <FormInputBoxes
             onChange={onInputChange}
             value={formData.email}
@@ -44,7 +44,7 @@ const UserForm = ({
         </InputLabelContainer>
         {formType !== "" && (
           <InputLabelContainer>
-            <FormLabels htmlFor="password">Password</FormLabels>
+            <label htmlFor="password">Password</label>
             <FormInputBoxes
               onChange={onInputChange}
               value={formData.password}

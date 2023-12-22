@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
+import { selectNotebook } from "@/state/notebook/notesSlice";
 import { setData } from "@/state/user/userSlice";
 import { useRouter } from "next/router";
 
@@ -17,7 +18,8 @@ import ModalLayout from "../ModalComponents/ModalLayout";
 
 //Types
 import { TBasicData } from "./types";
-import { Dispatch, SetStateAction } from "react";
+import { create } from "domain";
+// import { Dispatch, SetStateAction } from "react";
 
 type TCreateLogicProps = {
   updateUserNotebooks: Function;
@@ -28,24 +30,13 @@ const CreateNotebookLogic = ({
   updateUserNotebooks,
   closeModal,
 }: TCreateLogicProps) => {
-  const router = useRouter()
+  
   const {handleSnackBarOpening, CustomSnackbar} = useSnackbar()
   const dispatch = useDispatch();
 
   const initialData = { title: "", description: "" };
 
   const [formData, setFormData] = useState(initialData);
-
-  const getCreatedNotebook = (notebooks: TBasicData[]) => {
-    const newestId = notebooks.reduce((acc: number, notebook: TBasicData) => {
-      if (notebook.id > acc) {
-        acc = notebook.id
-      }
-      return acc
-    }, 0)
-
-    return notebooks.find(({id}: TBasicData) => id === newestId)
-  }
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
@@ -55,23 +46,18 @@ const CreateNotebookLogic = ({
 
       const { title, description } = formData;
 
-      const user = await axios.post(
+      const createdNotebook = await axios.post(
         "https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/notebook",
         { title, description },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      const { id, created_at, name, notebooks } = user.data;
-
-      dispatch(setData({ id, created_at, name, notebooks }));
-
-      const createdNotebook = getCreatedNotebook(notebooks)
       
       handleSnackBarOpening(alertMessages.create.success, "success", {name: "INFO"})
 
       setTimeout(() => {
-        console.log("ESTOU NO SET TIME OUT", createdNotebook)
-        updateUserNotebooks(createdNotebook);
+        console.log("ESTOU NO SET TIME OUT", createdNotebook.data)
+        dispatch(selectNotebook(createdNotebook.data))
+        updateUserNotebooks();
       }, 1000);
 
     } catch (error) {

@@ -2,6 +2,9 @@ import emotionStyled from "@emotion/styled";
 import { TNotesFormData } from "../NotebookComponents/types";
 import DisplayLog from "./DisplayLog";
 import { useState } from "react";
+// import { useDispatch } from "react-redux";
+// import { selectLog, deselectLog } from "@/state/notebook/notesSlice";
+
 
 type TLogFormData = TNotesFormData & {
   id: number;
@@ -48,22 +51,32 @@ const Audio = emotionStyled.audio`
 width: 100%;
 `;
 
-const LogElement = ({ log }: { log: TLogFormData }) => {
+const LogElement = ({ log, fetchLogs }: { log: TLogFormData, fetchLogs: Function }) => {
+  // const dispatch = useDispatch();
+
+  console.log("LOG NO LOGELEMENT",log)
+  
   const { url, mimetype } = log.file;
 
-  const [modal, setModal] = useState(false);
+  const [viewLogModal, setViewLogModal] = useState(false);
 
   const closeModal = (e: React.MouseEvent<HTMLElement>) => {
     if (e.target === e.currentTarget) {
-      setModal(false);
+      setViewLogModal(false)
+      // dispatch(deselectLog());
     }
+  };
+
+  const handleOpenLog = () => {
+    setViewLogModal(true);
+    // dispatch(selectLog(log));
   };
 
   return (
     <>
       <ImgContainer>
         <Icon
-          onClick={() => setModal(true)}
+          onClick={handleOpenLog}
           className="fi fi-br-arrow-up-right-from-square"
         />
         {mimetype.includes("image") && <Img src={url}></Img>}
@@ -78,7 +91,7 @@ const LogElement = ({ log }: { log: TLogFormData }) => {
           </Audio>
         )}
       </ImgContainer>
-      {modal && <DisplayLog log={log} closeModal={closeModal} />}
+      {viewLogModal && <DisplayLog log={log} closeModal={closeModal} fetchLogs={fetchLogs}/>}
     </>
   );
 };

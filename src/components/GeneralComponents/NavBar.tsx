@@ -1,17 +1,17 @@
 import emotionStyled from "@emotion/styled";
 import NextLink from "./NextLink";
-import LogoS from "./Logo/Logo";
+import LogoS from "../Logo/Logo";
 import { NextRouter, useRouter } from "next/router";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "@/state/user/userSlice";
 import { RootState } from "@/state/store";
 import { useState, useEffect } from "react";
 import { deleteCookies } from "@/actions/cookies";
+import { deselectAll } from "@/state/notebook/notesSlice";
 
 //Alerts
 import alertMessages from "@/assets/alertMessages";
-import useSnackbar from "./CustomHooks/useSnackbar";
-
+import useSnackbar from "../CustomHooks/useSnackbar";
 
 const MobileLink = emotionStyled(NextLink)`
 display: flex;
@@ -77,17 +77,19 @@ cursor: pointer;
 `;
 
 const NavBar = () => {
-  const {handleSnackBarOpening, CustomSnackbar} = useSnackbar()
+  const { handleSnackBarOpening, CustomSnackbar } = useSnackbar();
   const router = useRouter();
   const dispatch = useDispatch();
 
   const validUser = useSelector((state: RootState) => state.user.data.id);
 
   const handleClickLogOut = () => {
-
     dispatch(logout());
-    deleteCookies("authToken")
-    handleSnackBarOpening(alertMessages.logout.success, "success", {name: "INFO"})
+    dispatch(deselectAll())
+    deleteCookies("authToken");
+    handleSnackBarOpening(alertMessages.logout.success, "success", {
+      name: "INFO",
+    });
 
     router.push("/");
   };
@@ -124,7 +126,7 @@ const NavBar = () => {
           </>
         )}
       </Options>
-      <CustomSnackbar/>
+      <CustomSnackbar />
     </NavContainer>
   );
 };

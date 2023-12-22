@@ -3,6 +3,10 @@ import axios from "axios";
 import emotionStyled from "@emotion/styled";
 import { useRouter } from "next/router";
 
+//Context
+import { deselectMarker, selectMarker } from "@/state/notebook/notesSlice";
+import { useDispatch } from "react-redux";
+
 //Alerts
 import useSnackbar from "../CustomHooks/useSnackbar";
 import alertMessages from "@/assets/alertMessages";
@@ -20,21 +24,22 @@ import { TPin } from "../NotebookComponents/types";
 import { RedButton } from "../FormComponents/RedButton";
 
 type TEditMarkerLogicProps = {
-  notebookId: number;
-  initialData: TPin;
+  storedMarker: TPin;
   closeModal: React.MouseEventHandler<HTMLElement>;
-  // updateNotebookMarkers: Function;
+  updateNotebookMarkers: Function;
 };
 
 const EditMarkerLogic = ({
-  notebookId,
-  initialData,
+  storedMarker,
   closeModal,
+  updateNotebookMarkers,
 }: TEditMarkerLogicProps) => {
   const router = useRouter();
+  const dispatch = useDispatch();
+
   const { handleSnackBarOpening, CustomSnackbar } = useSnackbar();
 
-  const [formData, setFormData] = useState(initialData);
+  const [formData, setFormData] = useState(storedMarker);
 
   const onLocationChange = (data: { lat: number; lng: number }) => {
     setFormData({
@@ -65,13 +70,12 @@ const EditMarkerLogic = ({
       console.log("LOCATION", location);
 
       //atualizar
-      const notebook = await axios.patch(
-        `https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/pin/${initialData.id}`,
+      const editedMarker = await axios.patch(
+        `https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/pin/${storedMarker.id}`,
         {
           title,
           description,
           location,
-          notebook_id: notebookId,
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -81,8 +85,9 @@ const EditMarkerLogic = ({
       });
 
       setTimeout(() => {
-        // updateNotebookMarkers(notebook.data.pins);
-        router.push(`/notes/${notebookId}/marker/${initialData.id}`);
+        dispatch(selectMarker(editedMarker.data));
+        updateNotebookMarkers();
+        // router.push(`/notes/${notebookId}/marker/${initialData.id}`);
       }, 1000);
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -100,7 +105,7 @@ const EditMarkerLogic = ({
       const token = await getCookies("authToken");
 
       await axios.delete(
-        `https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/pin/${initialData.id}`,
+        `https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/pin/${storedMarker.id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -115,7 +120,8 @@ const EditMarkerLogic = ({
 
       setTimeout(() => {
         // updateNotebookMarkers(notebook.data.pins);
-        router.push(`/notes/${notebookId}`);
+        dispatch(deselectMarker());
+        router.push(`/notes`);
       }, 1000);
     } catch (error) {
       if (axios.isAxiosError(error)) {

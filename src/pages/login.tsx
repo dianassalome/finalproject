@@ -5,7 +5,7 @@ import axios from "axios";
 //Components
 import Login from "@/components/UserComponents/LoginLogic";
 import CenterElementsContainer from "@/components/GeneralContainers/CenterElementsContainer";
-import NextLink from "@/components/NextLink";
+import NextLink from "@/components/GeneralComponents/NextLink";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/state/store";
 import emotionStyled from "@emotion/styled";
@@ -22,7 +22,7 @@ const FaintLink = styled(NextLink)`
 const Container = emotionStyled(CenterElementsContainer)`
 height: 100%;
 min-height: 70vh;
-`
+`;
 
 const LoginPage = () => {
   const userInStore = useSelector((state: RootState) => state.user);
@@ -45,10 +45,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
     const token = cookies?.replace("authToken=", "");
 
-    await axios.get(
-      "https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/auth/me",
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+    await axios.get("https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/auth/me", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
     return {
       redirect: {
@@ -57,7 +56,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       },
     };
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return { props: {} };
   }
 };

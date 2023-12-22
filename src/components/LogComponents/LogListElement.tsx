@@ -1,7 +1,7 @@
 import emotionStyled from "@emotion/styled";
 import axios from "axios";
 
-import Button from "../Button";
+import Button from "../GeneralComponents/Button";
 import { RedButton } from "../FormComponents/RedButton";
 import { getCookies } from "@/actions/cookies";
 import useSnackbar from "../CustomHooks/useSnackbar";
@@ -23,10 +23,10 @@ display: flex;
 const LogListElement = async ({ title }: TLogListElementProps) => {
   const { handleSnackBarOpening, CustomSnackbar } = useSnackbar();
 
-//   const readFile = JSON.parse(file)
-//   console.log(readFile.url);
+  //   const readFile = JSON.parse(file)
+  //   console.log(readFile.url);
 
-console.log("ESTE È O FILE",title)
+  console.log("ESTE È O FILE", title);
 
   // const handleDeleteButton = async () => {
   //   try {
@@ -59,7 +59,7 @@ console.log("ESTE È O FILE",title)
       <p>{title}</p>
       <Button>
         {/* <a href={readFile.url}> */}
-          <i className="fi fi-bs-eye" />
+        <i className="fi fi-bs-eye" />
         {/* </a> */}
       </Button>
       {/* <RedButton
@@ -77,4 +77,4 @@ console.log("ESTE È O FILE",title)
   );
 };
 
-export default LogListElement
+export default LogListElement;
