@@ -1,6 +1,5 @@
 import { useState } from "react";
 import styled from "@emotion/styled";
-import NextLink from "../GeneralComponents/NextLink";
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
 import { selectMarker } from "@/state/notebook/notesSlice";
@@ -17,12 +16,8 @@ import {
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
-//Types
-// import { TPin } from "../NotebookComponents/types";
-
 //Components
 import CreateMarkerLogic from "./CreateMarkerLogic";
-import EditMarkerLogic from "./EditMarkerLogic";
 
 type TBasicData = {
   id: number;
@@ -71,14 +66,9 @@ const MapPins = ({ pins }: MapPinsProps) => {
   const tempMarkerRef = useRef(null);
   const dispatch = useDispatch()
 
-  console.log("PINS", pins);
-
-  const notebookPins = pins;
 
   const [pinList, setPinList] = useState<TPin[] | []>(pins || []);
 
-  //PIN SELECTION LOGIC
-  // const [selectedPin, setSelectedPin] = useState<TPin | null>(null);
 
   const initialMapCoordinates = pinList.length
     ? { lat: pinList[0].location.data.lat, lng: pinList[0].location.data.lng }
@@ -92,10 +82,9 @@ const MapPins = ({ pins }: MapPinsProps) => {
     router.push(`/notes/marker/`);
   };
 
-  //MODALS
   const [modalType, setModalType] = useState<"CREATE_MARKER" | false>(false);
 
-  //SELECT LOCATION TO CREATE NEW PIN LOGIC
+
   const [newLocation, setNewLocation] = useState<{
     lat: number;
     lng: number;
@@ -122,7 +111,6 @@ const MapPins = ({ pins }: MapPinsProps) => {
   const onMapClick = (e: L.LeafletMouseEvent) => {
     setNewLocation(e.latlng);
 
-    //cuidado type any
     const tempMarker = tempMarkerRef.current;
     if (tempMarker) {
       (tempMarker as any).openPopup();
@@ -144,7 +132,6 @@ const MapPins = ({ pins }: MapPinsProps) => {
     setPinList(pins);
   };
 
-  // console.log(selectedPin);
   return (
     <>
       <StyledMapContainer

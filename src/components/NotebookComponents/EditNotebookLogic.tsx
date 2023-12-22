@@ -1,7 +1,5 @@
 import { useState } from "react";
 import axios from "axios";
-import { useDispatch } from "react-redux";
-import { setData } from "@/state/user/userSlice";
 
 //Alerts
 import alertMessages from "@/assets/alertMessages";
@@ -14,11 +12,10 @@ import { getNotebookById } from "@/actions/fetchXano";
 //Components
 import NotesForm from "./NotesForm";
 import ModalLayout from "../ModalComponents/ModalLayout";
-import { TBasicData } from "./types";
 import { RedButton } from "../FormComponents/RedButton";
 
 //Context
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/state/store";
 import { selectNotebook, deselectNotebook } from "@/state/notebook/notesSlice";
 

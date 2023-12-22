@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo, useCallback } from "react";
+import { useRef, useMemo } from "react";
 import { Marker } from "react-leaflet";
 import L from "leaflet";
 
@@ -18,7 +18,6 @@ const DraggableMarker = ({
         const marker = markerRef.current;
         if (marker != null) {
           const latLng = (marker as any).getLatLng();
-          console.log("ISTO È O QUE",latLng)
           onLocationChange(latLng);
         }
       },

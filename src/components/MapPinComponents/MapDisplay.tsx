@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+
 import emotionStyled from "@emotion/styled";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
@@ -7,15 +6,11 @@ import { RootState } from "@/state/store";
 //Conditional rendering
 import dynamic from "next/dynamic";
 
-//Functions
-import { getCookies } from "@/actions/cookies";
 
 //Types
 import { TNotebook } from "../NotebookComponents/types";
 
-type TNotebookProps = {
-  notebook: TNotebook;
-};
+
 
 const Container = emotionStyled.div`
 width: 100%;

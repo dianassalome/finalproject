@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getCookies } from "./cookies";
 
 export const getNotebookById = async (id: number, token: string) => {
   return await axios.get(

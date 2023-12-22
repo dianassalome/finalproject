@@ -91,8 +91,6 @@ const NotebooksDashboard = () => {
 
   !storedNotebook && dispatch(selectNotebook(userNotebooks[0]));
 
-  console.log("NOTEBOOKS", userNotebooks, "STORED", storedNotebook);
-
   const handleNotebookSelection = async (
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
@@ -123,7 +121,6 @@ const NotebooksDashboard = () => {
       );
 
       setUserNotebooks(notebooks.data);
-      console.log("NOTEBOOKS USE EFFECT", notebooks.data);
     } catch (error) {
       console.log(error);
     }

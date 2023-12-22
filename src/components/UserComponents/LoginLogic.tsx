@@ -1,7 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { useDispatch } from "react-redux";
 
 //Alerts
 import alertMessages from "@/assets/alertMessages";
@@ -19,7 +18,6 @@ import { TFormData } from "@/components/UserComponents/types";
 const Login = () => {
   const {handleSnackBarOpening, CustomSnackbar} = useSnackbar()
   const router = useRouter();
-  const dispatch = useDispatch();
 
   const [formData, setFormData] = useState<TFormData>({
     email: "",

@@ -1,26 +1,24 @@
-import { TBasicData } from "../NotebookComponents/types";
+
 
 import { useState } from "react";
-import { TNotesFormData } from "../NotebookComponents/types";
+
 import { getCookies } from "@/actions/cookies";
 import axios from "axios";
 import { PickerFileMetadata } from "filestack-js";
 import { PickerOverlay } from "filestack-react";
-import formatDate from "@/actions/formatDate";
-import NotesForm from "../NotebookComponents/NotesForm";
+
 import Button from "../GeneralComponents/Button";
 import useSnackbar from "../CustomHooks/useSnackbar";
 import ModalLayout from "../ModalComponents/ModalLayout";
 import alertMessages from "@/assets/alertMessages";
-import { useRouter } from "next/router";
+
 
 import FormInputBoxes from "../FormComponents/FormInputBoxes";
 import InputLabelContainer from "../FormComponents/InputLabelContainer";
 
 import CenterElementsContainer from "../GeneralContainers/CenterElementsContainer";
 
-//Context
-import { useDispatch } from "react-redux";
+
 
 const CreateLogLogic = ({
   markerId,
@@ -31,10 +29,10 @@ const CreateLogLogic = ({
   closeModal: React.MouseEventHandler<HTMLElement>;
   onLogCreation: Function;
 }) => {
-  const router = useRouter();
+
   const { handleSnackBarOpening, CustomSnackbar } = useSnackbar();
   const [showPicker, setShowPicker] = useState(false);
-  // const [mediaContent, setMediaContent] = useState([]);
+
 
   type TLogFormData = {
     title: string;
@@ -57,7 +55,7 @@ const CreateLogLogic = ({
 
   const handleUploadDone = async (res: PickerFileMetadata | any) => {
     try {
-      //ele não reconhece o tipo de ficheiro
+  
       const file = res.filesUploaded[0];
 
       setFormData({
@@ -94,27 +92,28 @@ const CreateLogLogic = ({
 
       const { title, file } = formData;
 
-      console.log("FILE AQUI", file);
-
-      const log = await axios.post(
+      await axios.post(
         "https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/log",
         { title, pin_id: markerId, file },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      console.log("RESULTADO DO CREATE LOG", log.data);
-      setFormData(initialFormData);
-      setShowPicker(false);
-      onLogCreation();
-
       handleSnackBarOpening(alertMessages.create.success, "success", {
         name: "INFO",
       });
 
+      const marker = await axios.get(
+        `https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/pin/${markerId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+
       setTimeout(() => {
-        // dispatch(select)
-        // router.push(`/notes/marker/`);
+        setFormData(initialFormData);
+        setShowPicker(false);
+        onLogCreation(marker.data);
       }, 1000);
+
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error(error.response?.data.message);

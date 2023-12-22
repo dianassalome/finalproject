@@ -1,6 +1,5 @@
 import { useState } from "react";
 import axios from "axios";
-import emotionStyled from "@emotion/styled";
 import { useRouter } from "next/router";
 
 //Context
@@ -17,7 +16,6 @@ import { getCookies } from "@/actions/cookies";
 //Components
 import MarkerForm from "./MarkerForm";
 import MarkerModalLayout from "../ModalComponents/MarkerModalLayout";
-import EditMapCoordinates from "./EditMapCoordinates";
 
 //Types
 import { TPin } from "../NotebookComponents/types";
@@ -67,9 +65,6 @@ const EditMarkerLogic = ({
 
       const { title, description, location } = formData;
 
-      console.log("LOCATION", location);
-
-      //atualizar
       const editedMarker = await axios.patch(
         `https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/pin/${storedMarker.id}`,
         {
@@ -87,7 +82,6 @@ const EditMarkerLogic = ({
       setTimeout(() => {
         dispatch(selectMarker(editedMarker.data));
         updateNotebookMarkers();
-        // router.push(`/notes/${notebookId}/marker/${initialData.id}`);
       }, 1000);
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -109,17 +103,11 @@ const EditMarkerLogic = ({
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // const notebook = await axios.get(
-      //   `https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/notebook/${notebookId}`,
-      //   { headers: { Authorization: `Bearer ${token}` } }
-      // );
-
       handleSnackBarOpening(alertMessages.delete.success, "success", {
         name: "INFO",
       });
 
       setTimeout(() => {
-        // updateNotebookMarkers(notebook.data.pins);
         dispatch(deselectMarker());
         router.push(`/notes`);
       }, 1000);

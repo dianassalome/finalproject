@@ -2,8 +2,6 @@ import emotionStyled from "@emotion/styled";
 import { TNotesFormData } from "../NotebookComponents/types";
 import DisplayLog from "./DisplayLog";
 import { useState } from "react";
-// import { useDispatch } from "react-redux";
-// import { selectLog, deselectLog } from "@/state/notebook/notesSlice";
 
 
 type TLogFormData = TNotesFormData & {
@@ -51,11 +49,8 @@ const Audio = emotionStyled.audio`
 width: 100%;
 `;
 
-const LogElement = ({ log, fetchLogs }: { log: TLogFormData, fetchLogs: Function }) => {
-  // const dispatch = useDispatch();
+const LogElement = ({ log, updateLogs }: { log: TLogFormData, updateLogs: Function }) => {
 
-  console.log("LOG NO LOGELEMENT",log)
-  
   const { url, mimetype } = log.file;
 
   const [viewLogModal, setViewLogModal] = useState(false);
@@ -63,14 +58,16 @@ const LogElement = ({ log, fetchLogs }: { log: TLogFormData, fetchLogs: Function
   const closeModal = (e: React.MouseEvent<HTMLElement>) => {
     if (e.target === e.currentTarget) {
       setViewLogModal(false)
-      // dispatch(deselectLog());
     }
   };
 
   const handleOpenLog = () => {
     setViewLogModal(true);
-    // dispatch(selectLog(log));
   };
+
+  const onDeleteLog = () => {
+    setViewLogModal(false)
+  }
 
   return (
     <>
@@ -91,7 +88,7 @@ const LogElement = ({ log, fetchLogs }: { log: TLogFormData, fetchLogs: Function
           </Audio>
         )}
       </ImgContainer>
-      {viewLogModal && <DisplayLog log={log} closeModal={closeModal} fetchLogs={fetchLogs}/>}
+      {viewLogModal && <DisplayLog log={log} closeModal={closeModal} updateLogs={updateLogs} onDeleteLog={onDeleteLog}/>}
     </>
   );
 };

@@ -12,6 +12,7 @@ import { useState } from "react";
 import FormInputBoxes from "../FormComponents/FormInputBoxes";
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
+import { useRouter } from "next/router";
 
 
 type TLogFormData = TNotesFormData & {
@@ -61,23 +62,27 @@ const Form = emotionStyled.form`
 `;
 
 
-
 const DisplayLog = ({
   log,
   closeModal,
-  fetchLogs
+  updateLogs,
+  onDeleteLog
 }: {
   log: TLogFormData;
   closeModal: React.MouseEventHandler<HTMLElement>;
-  fetchLogs: Function
+  updateLogs: Function;
+  onDeleteLog: Function;
 }) => {
+  const storedMarker = useSelector((state: RootState) => state.notes.marker)
   const [selectedLog, setSelectedLog] = useState(log)
   const [editMode, setEditMode] = useState(false);
-  const [titleInput, setTitleInput] = useState("");
+  const [titleInput, setTitleInput] = useState(log.title);
   const { handleSnackBarOpening, CustomSnackbar } = useSnackbar();
 
+  const router = useRouter()
+
   const { id, title, file, created_at } = selectedLog;
-  console.log("ID DO LOG", id);
+
 
   const handleDeleteButton = async () => {
     try {
@@ -92,10 +97,15 @@ const DisplayLog = ({
         name: "INFO",
       });
 
-      await fetchLogs()
+      const marker = await axios.get(
+        `https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/pin/${storedMarker?.id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
       setTimeout(() => {
         setEditModeOff()
+        updateLogs(marker.data)
+        onDeleteLog()
       }, 1000);
 
     } catch (error) {
@@ -114,7 +124,7 @@ const DisplayLog = ({
     e.preventDefault();
 
     await editLog();
-    await fetchLogs()
+    // await fetchLogs()
     setEditModeOff();
   };
 
@@ -124,7 +134,7 @@ const DisplayLog = ({
 
       const editedLog = await axios.patch(
         `https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/log/${id}`,
-        { title: titleInput },
+        { title: titleInput, pin_id: storedMarker?.id },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -132,8 +142,17 @@ const DisplayLog = ({
         name: "INFO",
       });
 
+      const marker = await axios.get(
+        `https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/pin/${storedMarker?.id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      // const editedLog = marker.data.logs.find(({id}: {id: number}) => id === selectedLog.id)
+  console.log("MARKER EDIT",marker.data)
+
+
       setTimeout(() => {
         setSelectedLog(editedLog.data)
+        updateLogs(marker.data)
       }, 1000);
       
     } catch (error) {
@@ -150,7 +169,7 @@ const DisplayLog = ({
 
   const setEditModeOff = () => {
     setEditMode(false);
-    setTitleInput("");
+    // setTitleInput("");
   };
 
   return (
@@ -164,7 +183,6 @@ const DisplayLog = ({
           <Form onSubmit={handleSubmitButton}>
             <FormInputBoxes
               onChange={(e) => setTitleInput(e.target.value)}
-              placeholder={title}
               value={titleInput}
             />
             <Button>

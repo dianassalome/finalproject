@@ -1,20 +1,16 @@
-import { useState } from "react";
+
 import styled from "@emotion/styled";
 
 //Map
 import { useRef } from "react";
-import L from "leaflet";
+
 import {
   MapContainer,
   TileLayer,
-  Marker,
-  Popup,
-  useMapEvents,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
 //Types
-import { TPin } from "../NotebookComponents/types";
 import DraggableMarker from "./DraggableMarker";
 
 const StyledMapContainer = styled(MapContainer)`
@@ -29,7 +25,7 @@ type TEditMapProps = {
 };
 
 const EditMapCoordinates = ({ location, onLocationChange }: TEditMapProps) => {
-  // const [position, setPosition] = useState(location);
+
   const mapRef = useRef(null);
 
   return (

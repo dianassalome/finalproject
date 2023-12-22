@@ -1,6 +1,5 @@
 import emotionStyled from "@emotion/styled";
 
-//a navbar é que devia mudar a altura, não?
 
 const Img = emotionStyled.img`
 padding: 2px;

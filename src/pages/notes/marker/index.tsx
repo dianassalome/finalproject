@@ -1,7 +1,7 @@
 import emotionStyled from "@emotion/styled";
 
-import { TPin } from "@/components/NotebookComponents/types";
 import formatDate from "@/actions/formatDate";
+import { useEffect } from "react";
 
 import { useState } from "react";
 import EditMarkerLogic from "@/components/MapPinComponents/EditMarkerLogic";
@@ -10,8 +10,9 @@ import CreateLogLogic from "@/components/LogComponents/CreateLogLogic";
 
 import axios from "axios";
 import { TNotesFormData } from "@/components/NotebookComponents/types";
-import LogMap from "@/components/LogComponents/LogMap";
-// import { GetServerSideProps } from "next";
+// import LogMap from "@/components/LogComponents/LogMap";
+import LogElement from "@/components/LogComponents/LogElement";
+
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import { TNotebook } from "@/components/NotebookComponents/types";
 import NextLink from "@/components/GeneralComponents/NextLink";
@@ -32,12 +33,6 @@ gap: 1%;
 };
 `;
 
-// type TMarkerDisplayProps = {
-//   notebook: TNotebook;
-//   marker: TPin & { logs: TLogFormData[] | [] };
-//   // closeModal: React.MouseEventHandler<HTMLElement>;
-//   // updateNotebookMarkers: Function;
-// };
 
 type TUser = {
   id: number | null;
@@ -45,6 +40,33 @@ type TUser = {
   name: string;
   notebooks: TNotebook[] | [];
 } | null;
+
+type TBasicData = {
+  id: number;
+  created_at: number;
+  title: string;
+  description: string;
+};
+
+
+type TLog = TBasicData & {
+  file: { url: string; mimetype: string };
+  pin_id: number;
+  user_id: number;
+};
+
+type TPin = TBasicData & {
+  location: {
+    type: string;
+    data: {
+      lng: number;
+      lat: number;
+    };
+  };
+  notebook_id: number;
+  logs: [] | TLog[]
+};
+
 
 type TLogFormData = TNotesFormData & {
   id: number;
@@ -109,7 +131,7 @@ export const getServerSideProps = (async (context) => {
 const MarkerDisplay = ({
   user,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  console.log("ENTREI AQUI");
+
   const [modalMode, setModalMode] = useState<
     "EDIT_MARKER" | "ADD_FILE" | false
   >(false);
@@ -124,11 +146,25 @@ const MarkerDisplay = ({
     (state: RootState) => state.notes.notebook
   );
 
-  // const [addFile, setAddFile] = useState(false);
+  const [markerLogs, setMarkerLogs] = useState(storedMarker?.logs)
 
-  // const [markerLogs, setMarkerLogs] = useState<TLogFormData[] | []>(
-  //   marker.logs
-  // );
+  useEffect(() => {
+    const fetchLogs = async () => {
+      try {
+        const token = await getCookies("authToken");
+
+      const pin = await axios.get(
+        `https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/pin/${storedMarker?.id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setMarkerLogs(pin.data.logs)
+      } catch (error) {
+        console.log(error)
+      }
+    } 
+    fetchLogs()
+  }, [])
 
   const closeModal = (e: React.MouseEvent<HTMLElement>) => {
     if (e.target === e.currentTarget) {
@@ -136,10 +172,19 @@ const MarkerDisplay = ({
     }
   };
 
-  const onLogCreation = async () => {
-    await fetchMarker()
+  const onLogCreation = (marker: TPin) => {
+    console.log("MARKER AQUI", marker)
+    setMarkerLogs(marker.logs)
+    dispatch(selectMarker(marker))
     setModalMode(false);
   };
+
+  const updateLogs = (marker: TPin) => {
+    setMarkerLogs(marker.logs)
+
+    
+    dispatch(selectMarker(marker))
+  }
 
   const updateNotebookMarkers = async () => {
     await fetchNotebook()
@@ -162,21 +207,8 @@ const MarkerDisplay = ({
     }
   };
 
-  const fetchMarker = async () => {
-    try {
-      const token = await getCookies("authToken");
+  console.log("MARKER LOGS", markerLogs, storedMarker)
 
-      const marker = await axios.get(
-        `https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/pin/${storedMarker?.id}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      dispatch(selectMarker(marker.data))
-
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   return (
     <GeneralContainer>
@@ -203,7 +235,11 @@ const MarkerDisplay = ({
         />
       )}
       <LogsGrid>
-        {storedMarker && <LogMap />}
+        {/* {storedMarker && <LogMap />} */}
+        {markerLogs &&
+        markerLogs.map((log: TLogFormData) => (
+          <LogElement key={log.id} log={log} updateLogs={updateLogs}/>
+        ))}
       </LogsGrid>
       {storedMarker && modalMode === "ADD_FILE" && (
         <CreateLogLogic

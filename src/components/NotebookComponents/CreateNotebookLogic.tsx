@@ -2,8 +2,6 @@ import { useState } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { selectNotebook } from "@/state/notebook/notesSlice";
-import { setData } from "@/state/user/userSlice";
-import { useRouter } from "next/router";
 
 //Alerts
 import alertMessages from "@/assets/alertMessages";
@@ -16,10 +14,6 @@ import { getCookies } from "@/actions/cookies";
 import NotesForm from "./NotesForm";
 import ModalLayout from "../ModalComponents/ModalLayout";
 
-//Types
-import { TBasicData } from "./types";
-import { create } from "domain";
-// import { Dispatch, SetStateAction } from "react";
 
 type TCreateLogicProps = {
   updateUserNotebooks: Function;
@@ -55,7 +49,6 @@ const CreateNotebookLogic = ({
       handleSnackBarOpening(alertMessages.create.success, "success", {name: "INFO"})
 
       setTimeout(() => {
-        console.log("ESTOU NO SET TIME OUT", createdNotebook.data)
         dispatch(selectNotebook(createdNotebook.data))
         updateUserNotebooks();
       }, 1000);

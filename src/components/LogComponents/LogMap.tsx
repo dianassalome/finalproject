@@ -1,54 +1,54 @@
-import LogElement from "./LogElement";
-import { TNotesFormData } from "../NotebookComponents/types";
-import { getCookies } from "@/actions/cookies";
-//Context
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/state/store";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { selectMarker } from "@/state/notebook/notesSlice";
+// import LogElement from "./LogElement";
+// import { TNotesFormData } from "../NotebookComponents/types";
+// import { getCookies } from "@/actions/cookies";
 
-type TLogFormData = TNotesFormData & {
-  id: number;
-  created_at: number;
-  file: { url: string; mimetype: string };
-  pin_id: number;
-  user_id: number;
-};
+// //Context
+// import { useSelector } from "react-redux";
+// import { RootState } from "@/state/store";
 
-const LogMap = () => {
+// import { useEffect, useState } from "react";
+// import axios from "axios";
 
-  const storedMarker = useSelector((state: RootState) => state.notes.marker);
+// type TLogFormData = TNotesFormData & {
+//   id: number;
+//   created_at: number;
+//   file: { url: string; mimetype: string };
+//   pin_id: number;
+//   user_id: number;
+// };
 
-  const [logs, setLogs] = useState([]);
+// const LogMap = () => {
+//   const storedMarker = useSelector((state: RootState) => state.notes.marker);
 
-  useEffect(() => { 
-    fetchLogs();
-  }, []);
+//   const [logs, setLogs] = useState([]);
 
-  const fetchLogs = async () => {
-    try {
-      const token = await getCookies("authToken");
+//   useEffect(() => {
+//     fetchLogs();
+//   }, []);
 
-    const marker = await axios.get(
-      `https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/pin/${storedMarker?.id}`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+//   const fetchLogs = async () => {
+//     try {
+//       const token = await getCookies("authToken");
 
-    setLogs(marker.data.logs)
-    } catch (error) {
-      console.log(error)
-    }
-  };
+//       const marker = await axios.get(
+//         `https://x8ki-letl-twmt.n7.xano.io/api:CnbfD9Hm/pin/${storedMarker?.id}`,
+//         { headers: { Authorization: `Bearer ${token}` } }
+//       );
 
-  console.log("traz os logs?", storedMarker, logs);
+//       setLogs(marker.data.logs);
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   };
 
-  return (
-    <>
-      {storedMarker &&
-        logs.map((log: TLogFormData) => <LogElement key={log.id} log={log} fetchLogs={fetchLogs} />)}
-    </>
-  );
-};
+//   return (
+//     <>
+//       {storedMarker &&
+//         logs.map((log: TLogFormData) => (
+//           <LogElement key={log.id} log={log} fetchLogs={fetchLogs} />
+//         ))}
+//     </>
+//   );
+// };
 
-export default LogMap;
+// export default LogMap;
